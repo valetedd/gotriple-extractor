@@ -25,10 +25,12 @@ DOMAIN_REDIRECTS = {
 }
 
 
-def get_urls(df: pl.LazyFrame, n_sample: int, frac: float = 1.0):
-    urls = (
-        df.select(pl.col("url")).collect().sample(n=100, seed=42).to_series().to_list()
-    )
+def get_urls(df: pl.LazyFrame, sample_size: int | float):
+    urls = df.select(pl.col("url")).collect()
+    if isinstance(sample_size, int):
+        urls = urls.sample(n=sample_size, seed=42).to_series().to_list()
+    elif isinstance(sample_size, float):
+        urls = urls.sample(fraction=sample_size, seed=42).to_series().to_list()
     print(f"Returning {len(urls)} URLs")
     return urls
 
@@ -41,7 +43,7 @@ def fetch_pdf(
     headers = {
         "User-Agent": (
             "Mozilla/5.0 (X11; Linux x86_64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "AppleWebKit/537.36 (KHTML, like Gecko)"
             "Chrome/118.0.0.0 Safari/537.36"
         ),
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
@@ -58,28 +60,28 @@ def fetch_pdf(
         full_text = []
         for i, page in enumerate(doc):
 
-            blocks = page.get_text("blocks")
-            text = page.get_text("text")  # Try different extraction method
-            print(f"Page {i}: {len(blocks)} blocks, {len(text)} chars")
+            text = page.get_text("text").strip()
+            blocks = [
+                b[4].strip() for b in page.get_text("blocks") if b[6] == 0
+            ]  # type 0 = text block; cutting out coordinates etc.
             if blocks:
-                print(f"  First block: {blocks[0]}")
+                print(f"\nFirst block:\n\n {blocks[0][:100]}")
                 doc_blocks.append(blocks)
             if text:
-                full_text.append(text)
+                full_text.append(text.strip())
 
-        if len(full_text) <= 2 or not any(doc_blocks[:5]):
-            with open(file="./unavailable_pdfs.txt", mode="a", encoding="utf-8") as f:
-                f.write(url + "\n")
-            raise ValueError("Found an invalid PDF")
+        # if len(full_text) <= 2 or not any(doc_blocks[:5]):
+        #     with open(file="./unavailable_pdfs.txt", mode="a", encoding="utf-8") as f:
+        #         f.write(url + "\n")
+        #     raise ValueError("Found an invalid PDF")
 
-        print("\n\nRetrieved a PDF:")
+        print("\n\nSuccessfully retrieved a PDF!")
         print(f"Pages: {len(full_text)}")
-        print(f"\nSample:\n{full_text[0][:100]}")
-        return PDFDocument(blocks=doc_blocks, text=" ".join(full_text))
+        return Document(chunks=doc_blocks, text=" ".join(full_text))
 
     except Exception as e:
         print(f"Oops...{e}")
-        return []
+        return None
 
     finally:
         if doc:
@@ -94,38 +96,26 @@ def get_abstracts(df: pl.LazyFrame):
             .to_series()
             .to_list()
         )
-
+        result = []
         for abs in abstracts:
 
-            blocks = re.split(r"\n\s*\n+")  # splitting by paragraph
+            blocks = re.split(r"\n\s*\n+", abs)  # splitting by paragraph
 
-            pdf_doc = PDFDocument(blocks=blocks, text=abs)
-        return abstracts
+            doc_obj = Document(chunks=blocks, text=abs)
+            result.append(doc_obj)
+        return result
     except Exception as e:
         print("No abstract either")
         print(e)
 
 
-def abstract_fallback(df: pl.LazyFrame, url: str):
-    try:
-        abstract = (
-            df.filter(pl.col("url").str.contains(url))
-            .select(pl.col("abstract").struct.field("text"))
-            .collect(engine="streaming")
-            .row(0)
-        )
-        print(abstract)
-        return abstract
-    except Exception as e:
-        print("No abstract either")
-        print(e)
-
-
-def process_dump(
+def dump_to_text(
     path: str,
+    ouput_dir: str,
+    frac_or_num: int | float = 1.0,
     exclude: Optional[Tuple[str]] = None,
-    frac: float = 1.0,
     abstract_only: bool = False,
+    write_data: bool = True,
 ):
 
     for file in Path(path).iterdir():  # Iterating over discipline-specific JSONs
@@ -147,16 +137,20 @@ def process_dump(
                     pl.col("url").list.first(), pl.col("abstract").list.first()
                 )
                 .filter(pl.col("url").str.ends_with(".pdf"))
+                .filter(pl.col("in_language").list.first() == "en")
             )
             print(
                 "Number of data points for current discipline:",
                 data.select(pl.len()).collect().item(),
             )
 
+        collected_data = []
+
+        # TODO:Implement logic for abstract only extraction
         if abstract_only:
             abstracts = get_abstracts(data)
 
-        urls = get_urls(df=data, n_sample=100, frac=frac)
+        urls = get_urls(df=data, sample_size=frac_or_num)
 
         for url in urls:
             if any((key for key in DOMAIN_REDIRECTS if key in url)):
@@ -166,16 +160,48 @@ def process_dump(
                 url = f"http://{new_domain}/{new_url}"
             document_repr = fetch_pdf(url=url)
             if not document_repr:
-                abstract = abstract_fallback(data, url)
-                if not abstract or len(abstract) < 20:
+                try:
+                    abstract_raw = (
+                        data.filter(pl.col("url").str.contains(url))
+                        .select(pl.col("abstract").struct.field("text"))
+                        .collect(engine="streaming")
+                        .row(0)
+                    )
+                    abstract = abstract_raw[0].strip()
+                    if len(abstract) < 50:
+                        raise ValueError("Abstract discarded due to length")
+                    document_repr = Document(
+                        chunks=[re.split(r"\n\s*\n+", abstract)], text=abstract
+                    )  # chunks have to be matrices, representing pages. Abstracts only occupy one page, representing pages. Abstracts only occupy one page
+
+                    if not abstract or len(abstract) < 20:
+                        continue
+                    print(abstract)
+                except Exception as e:
+                    print(f"Error occurred while getting abstract: {e}")
                     continue
-                print(abstract)
+
+            doc_data = {
+                "url": url,
+                "chunks": document_repr.chunks,
+                "text": document_repr.text,
+            }
+            collected_data.append(doc_data)
+
+        result = pl.DataFrame(collected_data)
+        print(result)
+
+        if write_data:
+            path = os.path.join(ouput_dir, f"./{file.name.split("_")[0]}_dataset.json")
+            result.lazy().sink_ndjson(path)
 
 
 if __name__ == "__main__":
 
-    if not os.path.exists("./available_pdfs.txt"):
-        os.makedirs("./available_pdfs.txt")
-
     DUMP_PATH = "./gotriple_dump/"
-    process_dump(path=DUMP_PATH)
+    OUTPUT_DIR = "./extracted_data/"
+
+    if not os.path.exists(OUTPUT_DIR):
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    dump_to_text(path=DUMP_PATH, ouput_dir=OUTPUT_DIR, frac_or_num=10)

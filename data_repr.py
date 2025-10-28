@@ -1,15 +1,15 @@
 from dataclasses import dataclass
-from typing import List, Literal
+from typing import Iterator, List, Literal
 
 
 @dataclass
-class PDFDocument:
-    blocks: List[List[List]]
+class Document:
+    chunks: List[List] | List[str] | Iterator[List[str]]
     text: str
 
 
 @dataclass
 class AnnotatedSpan:
     span: str
-    annotations: tuple[str]
+    annotations: tuple[str] | tuple[tuple[str]]
     annotation_type: Literal["ent", "rel", "triple"]
