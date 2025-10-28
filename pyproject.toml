@@ -1,0 +1,12 @@
+[project]
+name = "gotriple-extractor"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "gliner>=0.2.22",
+    "polars>=1.34.0",
+    "pymupdf>=1.26.5",
+    "spacy>=3.8.7",
+]
