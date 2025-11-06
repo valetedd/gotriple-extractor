@@ -1,19 +1,15 @@
-import json
-import multiprocessing
-
-multiprocessing.set_start_method("spawn", force=True)
-import os
 from dataclasses import dataclass
 from typing import Any, Dict, Literal, Optional, Protocol
 
 import spacy
-from gliner import GLiNER
-from transformers import pipeline
-
-os.environ["VLLM_USE_V1"] = "1"
-from vllm import LLM, SamplingParams
+import torch
+from gliner import GLiNER, GLiNERConfig
+from transformers import AutoTokenizer, pipeline
 
 from data_repr import *
+
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {DEVICE}")
 
 
 class Extractor(Protocol):
@@ -31,10 +27,12 @@ class EntityExtractor:
 
     def __init__(
         self,
-        model_name: Literal["gliner", "spacy"],
-        entity_tags: Optional[List[str]],
+        model_type: Literal["gliner", "spacy"],
+        model_name: str,
+        entity_tags: List[str] | None = None,
         model_config: Optional[Dict] | None = None,
     ):
+        self.model_type = model_type
         self.model_name = model_name
         self.tags = entity_tags
         self._model = self._load_model(model_config=model_config)
@@ -44,18 +42,17 @@ class EntityExtractor:
 
     def _load_model(self, model_config: Optional[Dict[str, Any]]):
 
-        match (self.model_name):
+        match (self.model_type):
             case "gliner":
                 return GlinerEntityExtractor(
-                    gliner_model="urchade/gliner_multi",
+                    gliner_model=self.model_name,
                     entity_tags=self.tags,
-                    **(model_config or {}),
+                    gliner_config=(model_config or {}),
                 )
             case "spacy":
                 return SpacyEntityExtractor(
-                    spacy_model="en_core_web_sm",
+                    spacy_model=self.model_name,
                     entity_tags=self.tags,
-                    **(model_config or {}),
                 )
             case _:
                 raise ValueError(f"Unknown model: {self.model_name}")
@@ -73,9 +70,22 @@ class GlinerEntityExtractor:
             raise ValueError(
                 "A set of entity tags has to be specified for GLiNER to work correctly"
             )
-        self.model = GLiNER.from_pretrained(
-            pretrained_model_name_or_path=gliner_model, **(gliner_config or {})
+        # config = GLiNERConfig.from_pretrained(gliner_model)
+        # if gliner_config:
+        #     config.__dict__.update(gliner_config)
+        # tokenizer = AutoTokenizer.from_pretrained(config.model_name)
+        # self.model = GLiNER(config=config, tokenizer=tokenizer).to(DEVICE)
+        from huggingface_hub import snapshot_download
+
+        local_path = snapshot_download(
+            repo_id=gliner_model,
+            local_files_only=True,  # Don't download, just get the cache path
         )
+        self.model = GLiNER.from_pretrained(
+            pretrained_model_name_or_path=local_path,
+            map_location=DEVICE,
+            **(gliner_config or {}),
+        ).to(DEVICE)
         self.tags = entity_tags
 
     def extract(self, data):
@@ -96,6 +106,7 @@ class SpacyEntityExtractor:
     def extract(self, data) -> AnnotatedSpan:
         nlp = self.model(data)
         entities: List[str] = [ent.text for ent in nlp.ents]
+        print(entities)
         return AnnotatedSpan(
             span=data, annotations=tuple(entities), annotation_type="ent"
         )
@@ -155,34 +166,40 @@ class JointExtractor:
         self._model = self._load_model()
 
     def extract(self, data):
-        data = self._model.extract(data)
-        return data
+        if self._model is None:
+            raise AttributeError("Invalid model specified as self._model attribute")
+        return self._model.extract(data)
 
     def _load_model(self, *args, **kwargs):
 
         match (self.model_name):
             case "kg-llm":
-                return FtGemmaKG(params={"temperature": 0.1, "max_tokens": 4096})
+                # return FtGemmaKG(params={"temperature": 0.1, "max_tokens": 4096})
+                pass
             case "base-llm":
                 return
 
 
-class FtGemmaKG:
-    def __init__(self, params: Dict) -> None:
-        self.model = LLM("Metin/Gemma-2-2B-TR-Knowledge-Graph")
-        self.params = SamplingParams(**params) if params else None
-
-    def extract(self, data):
-
-        conversation = [{"role": "user", "content": data + "\n<knowledge_graph>"}]
-
-        outputs = self.model.chat(
-            conversation, sampling_params=self.params, use_tqdm=False
-        )
-
-        msg = json.loads(outputs[0].outputs[0].text)
-
-        return msg
+#
+# class FtGemmaKG:
+#
+#     def __init__(self, params: Dict) -> None:
+#         # from vllm import LLM, SamplingParams
+#
+#         # self.model = LLM("mradermacher/Gemma-2-2B-TR-Knowledge-Graph-i1-GGUF")
+#         # self.params = SamplingParams(**params) if params else None
+#
+#     def extract(self, data):
+#
+#         conversation = [{"role": "user", "content": data + "\n<knowledge_graph>"}]
+#
+#         outputs = self.model.chat(
+#             conversation, sampling_params=self.params, use_tqdm=True
+#         )
+#
+#         msg = json.loads(outputs[0].outputs[0].text)
+#
+#         return msg
 
 
 @dataclass
@@ -212,21 +229,33 @@ class TripleExtractor:
 if __name__ == "__main__":
     sentence = "Epicuro fu un filosofo dell'Antica Grecia. Tra il 1981 e il 1991 vi furono varie battaglie finanziate dal Nuovo Ordine dei Templari, fondati da Paperino nel VII secolo"
 
-    # extr = EntityExtractor(
-    #     "gliner",
-    #     entity_tags=[
-    #         "People",
-    #         "Organizations",
-    #         "Countries",
-    #         "Dates",
-    #         "Time spans",
-    #         "Historical time expressions",
-    #     ],
-    # )
-    # ents = extr.extract(sentence)
-    # print(ents.annotations)
-    # del extr
+    sentence = "John was born in Massachussets, in the city of New Haven, in 1998. His mother was Clarissa"
+    extr_spacy = EntityExtractor(model_type="spacy", model_name="xx_ent_wiki_sm")
+    ents = extr_spacy.extract(sentence)
+    print(ents.annotations)
 
-    extr = JointExtractor(model_name="kg-llm", entity_tags=None)
-    kg = extr.extract(sentence)
-    print(kg)
+    extr = EntityExtractor(
+        model_type="gliner",
+        model_name="knowledgator/gliner-x-large",
+        entity_tags=[
+            "people",
+            "organizations",
+            "countries",
+            "dates",
+            "time spans",
+            "historical time expressions",
+        ],
+    )
+    ents = extr.extract(sentence)
+    print("Entities: ", ents.annotations)
+    # del extr
+    # import multiprocessing as mp
+    # import os
+    #
+    # os.environ["VLLM_WORKER_MULTIPROC_METHOD"] = "spawn"
+    # mp.set_start_method("spawn", force=True)
+    #
+    # extr = JointExtractor(model_name="kg-llm", entity_tags=None)
+    # with mp.get_context("spawn").Pool(1) as pool:
+    #     kg = pool.apply(extr.extract, (sentence,))
+    #     print(json.loads(kg))

@@ -4,7 +4,7 @@ from typing import Iterator, List, Literal
 
 @dataclass
 class Document:
-    chunks: List[List] | List[str] | Iterator[List[str]]
+    chunks: List[str] | Iterator[List[str]]
     text: str
 
 
