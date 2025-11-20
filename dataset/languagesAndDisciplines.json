@@ -1,0 +1,3020 @@
+{
+  "buckets": [
+    {
+      "key": "en",
+      "doc_count": 11829276,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "socio",
+            "doc_count": 2154557
+          },
+          {
+            "key": "envir",
+            "doc_count": 2072094
+          },
+          {
+            "key": "hist",
+            "doc_count": 1700009
+          },
+          {
+            "key": "psy",
+            "doc_count": 1681372
+          },
+          {
+            "key": "edu",
+            "doc_count": 1558478
+          },
+          {
+            "key": "eco",
+            "doc_count": 1430742
+          },
+          {
+            "key": "geo",
+            "doc_count": 1357268
+          },
+          {
+            "key": "manag",
+            "doc_count": 1183830
+          },
+          {
+            "key": "scipo",
+            "doc_count": 1135643
+          },
+          {
+            "key": "lang",
+            "doc_count": 979123
+          },
+          {
+            "key": "demo",
+            "doc_count": 957920
+          },
+          {
+            "key": "phil",
+            "doc_count": 955461
+          },
+          {
+            "key": "info",
+            "doc_count": 696665
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 675949
+          },
+          {
+            "key": "droit",
+            "doc_count": 638616
+          },
+          {
+            "key": "litt",
+            "doc_count": 543297
+          },
+          {
+            "key": "art",
+            "doc_count": 534007
+          },
+          {
+            "key": "archi",
+            "doc_count": 493653
+          },
+          {
+            "key": "relig",
+            "doc_count": 408593
+          },
+          {
+            "key": "stat",
+            "doc_count": 404481
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 392598
+          },
+          {
+            "key": "archeo",
+            "doc_count": 276355
+          },
+          {
+            "key": "musiq",
+            "doc_count": 195252
+          },
+          {
+            "key": "genre",
+            "doc_count": 126717
+          },
+          {
+            "key": "class",
+            "doc_count": 64454
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 54922
+          },
+          {
+            "key": "museo",
+            "doc_count": 53006
+          }
+        ]
+      }
+    },
+    {
+      "key": "undefined",
+      "doc_count": 3916372,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "hist",
+            "doc_count": 1096672
+          },
+          {
+            "key": "phil",
+            "doc_count": 597992
+          },
+          {
+            "key": "socio",
+            "doc_count": 565902
+          },
+          {
+            "key": "geo",
+            "doc_count": 438086
+          },
+          {
+            "key": "envir",
+            "doc_count": 436589
+          },
+          {
+            "key": "psy",
+            "doc_count": 395122
+          },
+          {
+            "key": "art",
+            "doc_count": 359754
+          },
+          {
+            "key": "edu",
+            "doc_count": 352556
+          },
+          {
+            "key": "scipo",
+            "doc_count": 330029
+          },
+          {
+            "key": "info",
+            "doc_count": 277442
+          },
+          {
+            "key": "droit",
+            "doc_count": 252427
+          },
+          {
+            "key": "lang",
+            "doc_count": 249148
+          },
+          {
+            "key": "manag",
+            "doc_count": 234923
+          },
+          {
+            "key": "eco",
+            "doc_count": 215543
+          },
+          {
+            "key": "demo",
+            "doc_count": 183120
+          },
+          {
+            "key": "archi",
+            "doc_count": 171326
+          },
+          {
+            "key": "litt",
+            "doc_count": 169999
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 168461
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 138277
+          },
+          {
+            "key": "relig",
+            "doc_count": 119217
+          },
+          {
+            "key": "archeo",
+            "doc_count": 112745
+          },
+          {
+            "key": "stat",
+            "doc_count": 105621
+          },
+          {
+            "key": "musiq",
+            "doc_count": 75659
+          },
+          {
+            "key": "genre",
+            "doc_count": 45951
+          },
+          {
+            "key": "class",
+            "doc_count": 32884
+          },
+          {
+            "key": "museo",
+            "doc_count": 23856
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 4864
+          }
+        ]
+      }
+    },
+    {
+      "key": "fr",
+      "doc_count": 2781100,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "hist",
+            "doc_count": 1215398
+          },
+          {
+            "key": "phil",
+            "doc_count": 447346
+          },
+          {
+            "key": "scipo",
+            "doc_count": 392364
+          },
+          {
+            "key": "lang",
+            "doc_count": 325177
+          },
+          {
+            "key": "litt",
+            "doc_count": 291862
+          },
+          {
+            "key": "socio",
+            "doc_count": 281703
+          },
+          {
+            "key": "art",
+            "doc_count": 275095
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 193750
+          },
+          {
+            "key": "geo",
+            "doc_count": 160187
+          },
+          {
+            "key": "droit",
+            "doc_count": 157897
+          },
+          {
+            "key": "archeo",
+            "doc_count": 129938
+          },
+          {
+            "key": "edu",
+            "doc_count": 128419
+          },
+          {
+            "key": "envir",
+            "doc_count": 113643
+          },
+          {
+            "key": "info",
+            "doc_count": 102177
+          },
+          {
+            "key": "eco",
+            "doc_count": 100383
+          },
+          {
+            "key": "archi",
+            "doc_count": 97015
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 93746
+          },
+          {
+            "key": "relig",
+            "doc_count": 90554
+          },
+          {
+            "key": "psy",
+            "doc_count": 86312
+          },
+          {
+            "key": "class",
+            "doc_count": 77927
+          },
+          {
+            "key": "manag",
+            "doc_count": 73064
+          },
+          {
+            "key": "musiq",
+            "doc_count": 61876
+          },
+          {
+            "key": "demo",
+            "doc_count": 51741
+          },
+          {
+            "key": "genre",
+            "doc_count": 39388
+          },
+          {
+            "key": "stat",
+            "doc_count": 28523
+          },
+          {
+            "key": "museo",
+            "doc_count": 26555
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 4006
+          }
+        ]
+      }
+    },
+    {
+      "key": "de",
+      "doc_count": 2686717,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "musiq",
+            "doc_count": 1427312
+          },
+          {
+            "key": "lang",
+            "doc_count": 767500
+          },
+          {
+            "key": "litt",
+            "doc_count": 197460
+          },
+          {
+            "key": "hist",
+            "doc_count": 195967
+          },
+          {
+            "key": "edu",
+            "doc_count": 129126
+          },
+          {
+            "key": "info",
+            "doc_count": 119497
+          },
+          {
+            "key": "socio",
+            "doc_count": 107887
+          },
+          {
+            "key": "scipo",
+            "doc_count": 105235
+          },
+          {
+            "key": "phil",
+            "doc_count": 82087
+          },
+          {
+            "key": "geo",
+            "doc_count": 62188
+          },
+          {
+            "key": "relig",
+            "doc_count": 55557
+          },
+          {
+            "key": "droit",
+            "doc_count": 48853
+          },
+          {
+            "key": "psy",
+            "doc_count": 40217
+          },
+          {
+            "key": "eco",
+            "doc_count": 39301
+          },
+          {
+            "key": "art",
+            "doc_count": 38679
+          },
+          {
+            "key": "archeo",
+            "doc_count": 25971
+          },
+          {
+            "key": "manag",
+            "doc_count": 24931
+          },
+          {
+            "key": "museo",
+            "doc_count": 24565
+          },
+          {
+            "key": "archi",
+            "doc_count": 24322
+          },
+          {
+            "key": "envir",
+            "doc_count": 22593
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 18064
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 17450
+          },
+          {
+            "key": "demo",
+            "doc_count": 16678
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 16339
+          },
+          {
+            "key": "class",
+            "doc_count": 12169
+          },
+          {
+            "key": "genre",
+            "doc_count": 11752
+          },
+          {
+            "key": "stat",
+            "doc_count": 9461
+          }
+        ]
+      }
+    },
+    {
+      "key": "es",
+      "doc_count": 1525274,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "hist",
+            "doc_count": 381200
+          },
+          {
+            "key": "socio",
+            "doc_count": 288329
+          },
+          {
+            "key": "phil",
+            "doc_count": 236893
+          },
+          {
+            "key": "edu",
+            "doc_count": 232127
+          },
+          {
+            "key": "lang",
+            "doc_count": 173364
+          },
+          {
+            "key": "litt",
+            "doc_count": 148950
+          },
+          {
+            "key": "scipo",
+            "doc_count": 138431
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 135460
+          },
+          {
+            "key": "eco",
+            "doc_count": 116183
+          },
+          {
+            "key": "droit",
+            "doc_count": 106022
+          },
+          {
+            "key": "art",
+            "doc_count": 97110
+          },
+          {
+            "key": "psy",
+            "doc_count": 76958
+          },
+          {
+            "key": "envir",
+            "doc_count": 68226
+          },
+          {
+            "key": "info",
+            "doc_count": 66350
+          },
+          {
+            "key": "geo",
+            "doc_count": 65310
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 58079
+          },
+          {
+            "key": "archi",
+            "doc_count": 53733
+          },
+          {
+            "key": "archeo",
+            "doc_count": 50437
+          },
+          {
+            "key": "manag",
+            "doc_count": 39447
+          },
+          {
+            "key": "relig",
+            "doc_count": 34374
+          },
+          {
+            "key": "stat",
+            "doc_count": 32276
+          },
+          {
+            "key": "genre",
+            "doc_count": 29684
+          },
+          {
+            "key": "demo",
+            "doc_count": 27101
+          },
+          {
+            "key": "class",
+            "doc_count": 25584
+          },
+          {
+            "key": "musiq",
+            "doc_count": 23555
+          },
+          {
+            "key": "museo",
+            "doc_count": 8631
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 180
+          }
+        ]
+      }
+    },
+    {
+      "key": "other",
+      "doc_count": 1111665,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "hist",
+            "doc_count": 281703
+          },
+          {
+            "key": "edu",
+            "doc_count": 196018
+          },
+          {
+            "key": "phil",
+            "doc_count": 178021
+          },
+          {
+            "key": "socio",
+            "doc_count": 167854
+          },
+          {
+            "key": "lang",
+            "doc_count": 134547
+          },
+          {
+            "key": "eco",
+            "doc_count": 112618
+          },
+          {
+            "key": "scipo",
+            "doc_count": 94834
+          },
+          {
+            "key": "relig",
+            "doc_count": 92972
+          },
+          {
+            "key": "manag",
+            "doc_count": 91015
+          },
+          {
+            "key": "litt",
+            "doc_count": 86624
+          },
+          {
+            "key": "droit",
+            "doc_count": 81449
+          },
+          {
+            "key": "psy",
+            "doc_count": 66668
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 56511
+          },
+          {
+            "key": "envir",
+            "doc_count": 56167
+          },
+          {
+            "key": "art",
+            "doc_count": 54754
+          },
+          {
+            "key": "geo",
+            "doc_count": 49970
+          },
+          {
+            "key": "info",
+            "doc_count": 45246
+          },
+          {
+            "key": "demo",
+            "doc_count": 37100
+          },
+          {
+            "key": "archi",
+            "doc_count": 33704
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 33162
+          },
+          {
+            "key": "musiq",
+            "doc_count": 26549
+          },
+          {
+            "key": "stat",
+            "doc_count": 17969
+          },
+          {
+            "key": "archeo",
+            "doc_count": 16168
+          },
+          {
+            "key": "genre",
+            "doc_count": 15291
+          },
+          {
+            "key": "class",
+            "doc_count": 11933
+          },
+          {
+            "key": "museo",
+            "doc_count": 4314
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 623
+          }
+        ]
+      }
+    },
+    {
+      "key": "pt",
+      "doc_count": 655284,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "socio",
+            "doc_count": 174145
+          },
+          {
+            "key": "hist",
+            "doc_count": 162353
+          },
+          {
+            "key": "edu",
+            "doc_count": 142568
+          },
+          {
+            "key": "phil",
+            "doc_count": 86977
+          },
+          {
+            "key": "lang",
+            "doc_count": 78784
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 58460
+          },
+          {
+            "key": "litt",
+            "doc_count": 51847
+          },
+          {
+            "key": "scipo",
+            "doc_count": 48752
+          },
+          {
+            "key": "droit",
+            "doc_count": 44290
+          },
+          {
+            "key": "psy",
+            "doc_count": 42611
+          },
+          {
+            "key": "art",
+            "doc_count": 41293
+          },
+          {
+            "key": "envir",
+            "doc_count": 37363
+          },
+          {
+            "key": "geo",
+            "doc_count": 37054
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 33260
+          },
+          {
+            "key": "info",
+            "doc_count": 30515
+          },
+          {
+            "key": "eco",
+            "doc_count": 30009
+          },
+          {
+            "key": "manag",
+            "doc_count": 18916
+          },
+          {
+            "key": "archi",
+            "doc_count": 15749
+          },
+          {
+            "key": "relig",
+            "doc_count": 15518
+          },
+          {
+            "key": "demo",
+            "doc_count": 14007
+          },
+          {
+            "key": "archeo",
+            "doc_count": 11919
+          },
+          {
+            "key": "musiq",
+            "doc_count": 10424
+          },
+          {
+            "key": "genre",
+            "doc_count": 10411
+          },
+          {
+            "key": "class",
+            "doc_count": 5565
+          },
+          {
+            "key": "museo",
+            "doc_count": 4862
+          },
+          {
+            "key": "stat",
+            "doc_count": 3984
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 210
+          }
+        ]
+      }
+    },
+    {
+      "key": "pl",
+      "doc_count": 464414,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "hist",
+            "doc_count": 108321
+          },
+          {
+            "key": "phil",
+            "doc_count": 100146
+          },
+          {
+            "key": "litt",
+            "doc_count": 76300
+          },
+          {
+            "key": "socio",
+            "doc_count": 49672
+          },
+          {
+            "key": "droit",
+            "doc_count": 44425
+          },
+          {
+            "key": "scipo",
+            "doc_count": 44408
+          },
+          {
+            "key": "lang",
+            "doc_count": 39170
+          },
+          {
+            "key": "relig",
+            "doc_count": 36219
+          },
+          {
+            "key": "eco",
+            "doc_count": 35661
+          },
+          {
+            "key": "art",
+            "doc_count": 34175
+          },
+          {
+            "key": "edu",
+            "doc_count": 31628
+          },
+          {
+            "key": "manag",
+            "doc_count": 25781
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 22298
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 22152
+          },
+          {
+            "key": "info",
+            "doc_count": 18540
+          },
+          {
+            "key": "psy",
+            "doc_count": 17516
+          },
+          {
+            "key": "archeo",
+            "doc_count": 16673
+          },
+          {
+            "key": "musiq",
+            "doc_count": 13722
+          },
+          {
+            "key": "demo",
+            "doc_count": 12543
+          },
+          {
+            "key": "envir",
+            "doc_count": 10543
+          },
+          {
+            "key": "geo",
+            "doc_count": 10446
+          },
+          {
+            "key": "archi",
+            "doc_count": 9448
+          },
+          {
+            "key": "genre",
+            "doc_count": 6281
+          },
+          {
+            "key": "museo",
+            "doc_count": 4759
+          },
+          {
+            "key": "class",
+            "doc_count": 4600
+          },
+          {
+            "key": "stat",
+            "doc_count": 4508
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 361
+          }
+        ]
+      }
+    },
+    {
+      "key": "ru",
+      "doc_count": 366000,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "hist",
+            "doc_count": 105577
+          },
+          {
+            "key": "phil",
+            "doc_count": 59549
+          },
+          {
+            "key": "scipo",
+            "doc_count": 57201
+          },
+          {
+            "key": "socio",
+            "doc_count": 52150
+          },
+          {
+            "key": "eco",
+            "doc_count": 48072
+          },
+          {
+            "key": "droit",
+            "doc_count": 44188
+          },
+          {
+            "key": "edu",
+            "doc_count": 43851
+          },
+          {
+            "key": "litt",
+            "doc_count": 38954
+          },
+          {
+            "key": "lang",
+            "doc_count": 38025
+          },
+          {
+            "key": "psy",
+            "doc_count": 31910
+          },
+          {
+            "key": "demo",
+            "doc_count": 28225
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 20627
+          },
+          {
+            "key": "art",
+            "doc_count": 17230
+          },
+          {
+            "key": "envir",
+            "doc_count": 16093
+          },
+          {
+            "key": "manag",
+            "doc_count": 15841
+          },
+          {
+            "key": "geo",
+            "doc_count": 13556
+          },
+          {
+            "key": "info",
+            "doc_count": 12298
+          },
+          {
+            "key": "archeo",
+            "doc_count": 10933
+          },
+          {
+            "key": "relig",
+            "doc_count": 9777
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 9454
+          },
+          {
+            "key": "musiq",
+            "doc_count": 7364
+          },
+          {
+            "key": "archi",
+            "doc_count": 6894
+          },
+          {
+            "key": "stat",
+            "doc_count": 3208
+          },
+          {
+            "key": "class",
+            "doc_count": 2303
+          },
+          {
+            "key": "genre",
+            "doc_count": 2148
+          },
+          {
+            "key": "museo",
+            "doc_count": 1883
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 159
+          }
+        ]
+      }
+    },
+    {
+      "key": "it",
+      "doc_count": 279298,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "hist",
+            "doc_count": 86957
+          },
+          {
+            "key": "phil",
+            "doc_count": 52157
+          },
+          {
+            "key": "litt",
+            "doc_count": 42516
+          },
+          {
+            "key": "lang",
+            "doc_count": 38878
+          },
+          {
+            "key": "art",
+            "doc_count": 29939
+          },
+          {
+            "key": "socio",
+            "doc_count": 23032
+          },
+          {
+            "key": "droit",
+            "doc_count": 21647
+          },
+          {
+            "key": "scipo",
+            "doc_count": 20389
+          },
+          {
+            "key": "archi",
+            "doc_count": 17880
+          },
+          {
+            "key": "edu",
+            "doc_count": 16677
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 16599
+          },
+          {
+            "key": "relig",
+            "doc_count": 14261
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 12979
+          },
+          {
+            "key": "musiq",
+            "doc_count": 12756
+          },
+          {
+            "key": "archeo",
+            "doc_count": 11371
+          },
+          {
+            "key": "geo",
+            "doc_count": 10776
+          },
+          {
+            "key": "info",
+            "doc_count": 9027
+          },
+          {
+            "key": "class",
+            "doc_count": 7946
+          },
+          {
+            "key": "psy",
+            "doc_count": 7226
+          },
+          {
+            "key": "eco",
+            "doc_count": 6826
+          },
+          {
+            "key": "demo",
+            "doc_count": 5375
+          },
+          {
+            "key": "envir",
+            "doc_count": 4749
+          },
+          {
+            "key": "genre",
+            "doc_count": 4177
+          },
+          {
+            "key": "manag",
+            "doc_count": 3729
+          },
+          {
+            "key": "museo",
+            "doc_count": 2778
+          },
+          {
+            "key": "stat",
+            "doc_count": 1297
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 129
+          }
+        ]
+      }
+    },
+    {
+      "key": "hr",
+      "doc_count": 270837,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "hist",
+            "doc_count": 61585
+          },
+          {
+            "key": "scipo",
+            "doc_count": 49823
+          },
+          {
+            "key": "manag",
+            "doc_count": 47136
+          },
+          {
+            "key": "relig",
+            "doc_count": 45578
+          },
+          {
+            "key": "psy",
+            "doc_count": 29270
+          },
+          {
+            "key": "phil",
+            "doc_count": 28425
+          },
+          {
+            "key": "socio",
+            "doc_count": 19648
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 18566
+          },
+          {
+            "key": "droit",
+            "doc_count": 18517
+          },
+          {
+            "key": "envir",
+            "doc_count": 16709
+          },
+          {
+            "key": "edu",
+            "doc_count": 15017
+          },
+          {
+            "key": "info",
+            "doc_count": 13830
+          },
+          {
+            "key": "museo",
+            "doc_count": 11210
+          },
+          {
+            "key": "eco",
+            "doc_count": 10143
+          },
+          {
+            "key": "lang",
+            "doc_count": 10139
+          },
+          {
+            "key": "art",
+            "doc_count": 9870
+          },
+          {
+            "key": "litt",
+            "doc_count": 9420
+          },
+          {
+            "key": "geo",
+            "doc_count": 8497
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 7271
+          },
+          {
+            "key": "musiq",
+            "doc_count": 5874
+          },
+          {
+            "key": "archi",
+            "doc_count": 5292
+          },
+          {
+            "key": "demo",
+            "doc_count": 4025
+          },
+          {
+            "key": "archeo",
+            "doc_count": 3524
+          },
+          {
+            "key": "class",
+            "doc_count": 2667
+          },
+          {
+            "key": "stat",
+            "doc_count": 1598
+          },
+          {
+            "key": "genre",
+            "doc_count": 1483
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 22
+          }
+        ]
+      }
+    },
+    {
+      "key": "tr",
+      "doc_count": 179606,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "socio",
+            "doc_count": 54198
+          },
+          {
+            "key": "hist",
+            "doc_count": 39803
+          },
+          {
+            "key": "edu",
+            "doc_count": 32694
+          },
+          {
+            "key": "eco",
+            "doc_count": 20677
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 20635
+          },
+          {
+            "key": "manag",
+            "doc_count": 19735
+          },
+          {
+            "key": "phil",
+            "doc_count": 19169
+          },
+          {
+            "key": "psy",
+            "doc_count": 16988
+          },
+          {
+            "key": "relig",
+            "doc_count": 16024
+          },
+          {
+            "key": "art",
+            "doc_count": 13536
+          },
+          {
+            "key": "lang",
+            "doc_count": 11880
+          },
+          {
+            "key": "litt",
+            "doc_count": 10949
+          },
+          {
+            "key": "droit",
+            "doc_count": 9362
+          },
+          {
+            "key": "scipo",
+            "doc_count": 9182
+          },
+          {
+            "key": "info",
+            "doc_count": 9050
+          },
+          {
+            "key": "archi",
+            "doc_count": 8296
+          },
+          {
+            "key": "envir",
+            "doc_count": 6074
+          },
+          {
+            "key": "geo",
+            "doc_count": 5654
+          },
+          {
+            "key": "demo",
+            "doc_count": 5223
+          },
+          {
+            "key": "musiq",
+            "doc_count": 3950
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 3822
+          },
+          {
+            "key": "class",
+            "doc_count": 3485
+          },
+          {
+            "key": "archeo",
+            "doc_count": 2205
+          },
+          {
+            "key": "stat",
+            "doc_count": 1962
+          },
+          {
+            "key": "genre",
+            "doc_count": 1585
+          },
+          {
+            "key": "museo",
+            "doc_count": 768
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 55
+          }
+        ]
+      }
+    },
+    {
+      "key": "uk",
+      "doc_count": 131513,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "socio",
+            "doc_count": 27634
+          },
+          {
+            "key": "hist",
+            "doc_count": 25869
+          },
+          {
+            "key": "edu",
+            "doc_count": 25666
+          },
+          {
+            "key": "phil",
+            "doc_count": 24183
+          },
+          {
+            "key": "eco",
+            "doc_count": 19366
+          },
+          {
+            "key": "droit",
+            "doc_count": 17215
+          },
+          {
+            "key": "scipo",
+            "doc_count": 16330
+          },
+          {
+            "key": "psy",
+            "doc_count": 13086
+          },
+          {
+            "key": "lang",
+            "doc_count": 10959
+          },
+          {
+            "key": "info",
+            "doc_count": 8294
+          },
+          {
+            "key": "litt",
+            "doc_count": 7676
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 6788
+          },
+          {
+            "key": "art",
+            "doc_count": 6511
+          },
+          {
+            "key": "demo",
+            "doc_count": 6344
+          },
+          {
+            "key": "envir",
+            "doc_count": 5532
+          },
+          {
+            "key": "manag",
+            "doc_count": 5249
+          },
+          {
+            "key": "musiq",
+            "doc_count": 4435
+          },
+          {
+            "key": "geo",
+            "doc_count": 3606
+          },
+          {
+            "key": "archi",
+            "doc_count": 2784
+          },
+          {
+            "key": "relig",
+            "doc_count": 2700
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 2658
+          },
+          {
+            "key": "stat",
+            "doc_count": 1618
+          },
+          {
+            "key": "archeo",
+            "doc_count": 1251
+          },
+          {
+            "key": "genre",
+            "doc_count": 738
+          },
+          {
+            "key": "museo",
+            "doc_count": 496
+          },
+          {
+            "key": "class",
+            "doc_count": 233
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 45
+          }
+        ]
+      }
+    },
+    {
+      "key": "sv",
+      "doc_count": 125172,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "socio",
+            "doc_count": 41921
+          },
+          {
+            "key": "edu",
+            "doc_count": 25633
+          },
+          {
+            "key": "hist",
+            "doc_count": 15550
+          },
+          {
+            "key": "lang",
+            "doc_count": 12179
+          },
+          {
+            "key": "manag",
+            "doc_count": 11958
+          },
+          {
+            "key": "psy",
+            "doc_count": 11732
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 11033
+          },
+          {
+            "key": "droit",
+            "doc_count": 10083
+          },
+          {
+            "key": "scipo",
+            "doc_count": 9858
+          },
+          {
+            "key": "phil",
+            "doc_count": 9614
+          },
+          {
+            "key": "eco",
+            "doc_count": 9225
+          },
+          {
+            "key": "envir",
+            "doc_count": 8632
+          },
+          {
+            "key": "archi",
+            "doc_count": 7752
+          },
+          {
+            "key": "art",
+            "doc_count": 7421
+          },
+          {
+            "key": "litt",
+            "doc_count": 7367
+          },
+          {
+            "key": "info",
+            "doc_count": 6849
+          },
+          {
+            "key": "demo",
+            "doc_count": 6174
+          },
+          {
+            "key": "relig",
+            "doc_count": 5401
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 4955
+          },
+          {
+            "key": "musiq",
+            "doc_count": 4328
+          },
+          {
+            "key": "geo",
+            "doc_count": 4005
+          },
+          {
+            "key": "genre",
+            "doc_count": 3522
+          },
+          {
+            "key": "archeo",
+            "doc_count": 3410
+          },
+          {
+            "key": "museo",
+            "doc_count": 1320
+          },
+          {
+            "key": "stat",
+            "doc_count": 874
+          },
+          {
+            "key": "class",
+            "doc_count": 652
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 69
+          }
+        ]
+      }
+    },
+    {
+      "key": "el",
+      "doc_count": 123737,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "psy",
+            "doc_count": 55103
+          },
+          {
+            "key": "hist",
+            "doc_count": 25963
+          },
+          {
+            "key": "droit",
+            "doc_count": 19121
+          },
+          {
+            "key": "socio",
+            "doc_count": 17698
+          },
+          {
+            "key": "edu",
+            "doc_count": 12393
+          },
+          {
+            "key": "phil",
+            "doc_count": 7832
+          },
+          {
+            "key": "eco",
+            "doc_count": 5748
+          },
+          {
+            "key": "litt",
+            "doc_count": 4142
+          },
+          {
+            "key": "lang",
+            "doc_count": 4103
+          },
+          {
+            "key": "scipo",
+            "doc_count": 3621
+          },
+          {
+            "key": "art",
+            "doc_count": 3279
+          },
+          {
+            "key": "info",
+            "doc_count": 2274
+          },
+          {
+            "key": "manag",
+            "doc_count": 1985
+          },
+          {
+            "key": "class",
+            "doc_count": 1736
+          },
+          {
+            "key": "archeo",
+            "doc_count": 1623
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 1503
+          },
+          {
+            "key": "relig",
+            "doc_count": 1424
+          },
+          {
+            "key": "musiq",
+            "doc_count": 1303
+          },
+          {
+            "key": "museo",
+            "doc_count": 1223
+          },
+          {
+            "key": "envir",
+            "doc_count": 1002
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 996
+          },
+          {
+            "key": "archi",
+            "doc_count": 899
+          },
+          {
+            "key": "geo",
+            "doc_count": 882
+          },
+          {
+            "key": "demo",
+            "doc_count": 623
+          },
+          {
+            "key": "genre",
+            "doc_count": 536
+          },
+          {
+            "key": "stat",
+            "doc_count": 512
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 29
+          }
+        ]
+      }
+    },
+    {
+      "key": "ar",
+      "doc_count": 102487,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "hist",
+            "doc_count": 26931
+          },
+          {
+            "key": "phil",
+            "doc_count": 21016
+          },
+          {
+            "key": "relig",
+            "doc_count": 20972
+          },
+          {
+            "key": "edu",
+            "doc_count": 17181
+          },
+          {
+            "key": "socio",
+            "doc_count": 15046
+          },
+          {
+            "key": "lang",
+            "doc_count": 12331
+          },
+          {
+            "key": "litt",
+            "doc_count": 8628
+          },
+          {
+            "key": "art",
+            "doc_count": 7882
+          },
+          {
+            "key": "eco",
+            "doc_count": 7333
+          },
+          {
+            "key": "droit",
+            "doc_count": 6806
+          },
+          {
+            "key": "manag",
+            "doc_count": 5687
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 5490
+          },
+          {
+            "key": "archi",
+            "doc_count": 5351
+          },
+          {
+            "key": "scipo",
+            "doc_count": 4637
+          },
+          {
+            "key": "psy",
+            "doc_count": 4374
+          },
+          {
+            "key": "info",
+            "doc_count": 3427
+          },
+          {
+            "key": "envir",
+            "doc_count": 3416
+          },
+          {
+            "key": "geo",
+            "doc_count": 2420
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 1934
+          },
+          {
+            "key": "demo",
+            "doc_count": 1601
+          },
+          {
+            "key": "musiq",
+            "doc_count": 1353
+          },
+          {
+            "key": "genre",
+            "doc_count": 1203
+          },
+          {
+            "key": "archeo",
+            "doc_count": 1202
+          },
+          {
+            "key": "stat",
+            "doc_count": 1037
+          },
+          {
+            "key": "class",
+            "doc_count": 1018
+          },
+          {
+            "key": "museo",
+            "doc_count": 333
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 21
+          }
+        ]
+      }
+    },
+    {
+      "key": "nl",
+      "doc_count": 88577,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "hist",
+            "doc_count": 36666
+          },
+          {
+            "key": "archeo",
+            "doc_count": 18091
+          },
+          {
+            "key": "phil",
+            "doc_count": 16873
+          },
+          {
+            "key": "geo",
+            "doc_count": 13768
+          },
+          {
+            "key": "relig",
+            "doc_count": 7759
+          },
+          {
+            "key": "litt",
+            "doc_count": 6172
+          },
+          {
+            "key": "archi",
+            "doc_count": 6159
+          },
+          {
+            "key": "envir",
+            "doc_count": 5659
+          },
+          {
+            "key": "lang",
+            "doc_count": 5409
+          },
+          {
+            "key": "scipo",
+            "doc_count": 5235
+          },
+          {
+            "key": "socio",
+            "doc_count": 5211
+          },
+          {
+            "key": "droit",
+            "doc_count": 4621
+          },
+          {
+            "key": "art",
+            "doc_count": 4123
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 2499
+          },
+          {
+            "key": "demo",
+            "doc_count": 2072
+          },
+          {
+            "key": "eco",
+            "doc_count": 2007
+          },
+          {
+            "key": "musiq",
+            "doc_count": 1815
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 1704
+          },
+          {
+            "key": "edu",
+            "doc_count": 1601
+          },
+          {
+            "key": "psy",
+            "doc_count": 1341
+          },
+          {
+            "key": "info",
+            "doc_count": 1240
+          },
+          {
+            "key": "manag",
+            "doc_count": 1235
+          },
+          {
+            "key": "class",
+            "doc_count": 1013
+          },
+          {
+            "key": "genre",
+            "doc_count": 924
+          },
+          {
+            "key": "stat",
+            "doc_count": 862
+          },
+          {
+            "key": "museo",
+            "doc_count": 490
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 32
+          }
+        ]
+      }
+    },
+    {
+      "key": "sl",
+      "doc_count": 58873,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "hist",
+            "doc_count": 19618
+          },
+          {
+            "key": "litt",
+            "doc_count": 10070
+          },
+          {
+            "key": "phil",
+            "doc_count": 9742
+          },
+          {
+            "key": "lang",
+            "doc_count": 8480
+          },
+          {
+            "key": "geo",
+            "doc_count": 5633
+          },
+          {
+            "key": "socio",
+            "doc_count": 5445
+          },
+          {
+            "key": "scipo",
+            "doc_count": 5136
+          },
+          {
+            "key": "edu",
+            "doc_count": 4825
+          },
+          {
+            "key": "art",
+            "doc_count": 4203
+          },
+          {
+            "key": "droit",
+            "doc_count": 3805
+          },
+          {
+            "key": "musiq",
+            "doc_count": 3796
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 3533
+          },
+          {
+            "key": "demo",
+            "doc_count": 3269
+          },
+          {
+            "key": "manag",
+            "doc_count": 2933
+          },
+          {
+            "key": "psy",
+            "doc_count": 2831
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 2747
+          },
+          {
+            "key": "info",
+            "doc_count": 2557
+          },
+          {
+            "key": "archeo",
+            "doc_count": 2368
+          },
+          {
+            "key": "eco",
+            "doc_count": 2301
+          },
+          {
+            "key": "archi",
+            "doc_count": 2102
+          },
+          {
+            "key": "relig",
+            "doc_count": 1975
+          },
+          {
+            "key": "class",
+            "doc_count": 1583
+          },
+          {
+            "key": "envir",
+            "doc_count": 1399
+          },
+          {
+            "key": "stat",
+            "doc_count": 792
+          },
+          {
+            "key": "genre",
+            "doc_count": 694
+          },
+          {
+            "key": "museo",
+            "doc_count": 573
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 40
+          }
+        ]
+      }
+    },
+    {
+      "key": "fi",
+      "doc_count": 53997,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "socio",
+            "doc_count": 12226
+          },
+          {
+            "key": "hist",
+            "doc_count": 10286
+          },
+          {
+            "key": "edu",
+            "doc_count": 8728
+          },
+          {
+            "key": "manag",
+            "doc_count": 7239
+          },
+          {
+            "key": "demo",
+            "doc_count": 4902
+          },
+          {
+            "key": "eco",
+            "doc_count": 4887
+          },
+          {
+            "key": "lang",
+            "doc_count": 4655
+          },
+          {
+            "key": "phil",
+            "doc_count": 4548
+          },
+          {
+            "key": "art",
+            "doc_count": 4313
+          },
+          {
+            "key": "info",
+            "doc_count": 4270
+          },
+          {
+            "key": "scipo",
+            "doc_count": 4261
+          },
+          {
+            "key": "psy",
+            "doc_count": 4241
+          },
+          {
+            "key": "archi",
+            "doc_count": 3935
+          },
+          {
+            "key": "musiq",
+            "doc_count": 3629
+          },
+          {
+            "key": "envir",
+            "doc_count": 3328
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 3026
+          },
+          {
+            "key": "litt",
+            "doc_count": 2547
+          },
+          {
+            "key": "geo",
+            "doc_count": 2296
+          },
+          {
+            "key": "droit",
+            "doc_count": 2247
+          },
+          {
+            "key": "relig",
+            "doc_count": 1416
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 1369
+          },
+          {
+            "key": "genre",
+            "doc_count": 784
+          },
+          {
+            "key": "stat",
+            "doc_count": 762
+          },
+          {
+            "key": "class",
+            "doc_count": 582
+          },
+          {
+            "key": "archeo",
+            "doc_count": 416
+          },
+          {
+            "key": "museo",
+            "doc_count": 295
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 3
+          }
+        ]
+      }
+    },
+    {
+      "key": "ca",
+      "doc_count": 48939,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "hist",
+            "doc_count": 17447
+          },
+          {
+            "key": "phil",
+            "doc_count": 9236
+          },
+          {
+            "key": "lang",
+            "doc_count": 5395
+          },
+          {
+            "key": "litt",
+            "doc_count": 4531
+          },
+          {
+            "key": "socio",
+            "doc_count": 4484
+          },
+          {
+            "key": "art",
+            "doc_count": 4014
+          },
+          {
+            "key": "scipo",
+            "doc_count": 3003
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 2990
+          },
+          {
+            "key": "edu",
+            "doc_count": 2614
+          },
+          {
+            "key": "droit",
+            "doc_count": 2307
+          },
+          {
+            "key": "info",
+            "doc_count": 2131
+          },
+          {
+            "key": "musiq",
+            "doc_count": 1922
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 1477
+          },
+          {
+            "key": "archeo",
+            "doc_count": 1476
+          },
+          {
+            "key": "archi",
+            "doc_count": 1229
+          },
+          {
+            "key": "psy",
+            "doc_count": 1101
+          },
+          {
+            "key": "geo",
+            "doc_count": 1001
+          },
+          {
+            "key": "genre",
+            "doc_count": 770
+          },
+          {
+            "key": "class",
+            "doc_count": 687
+          },
+          {
+            "key": "eco",
+            "doc_count": 679
+          },
+          {
+            "key": "relig",
+            "doc_count": 568
+          },
+          {
+            "key": "demo",
+            "doc_count": 531
+          },
+          {
+            "key": "manag",
+            "doc_count": 522
+          },
+          {
+            "key": "envir",
+            "doc_count": 465
+          },
+          {
+            "key": "museo",
+            "doc_count": 361
+          },
+          {
+            "key": "stat",
+            "doc_count": 277
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 2
+          }
+        ]
+      }
+    },
+    {
+      "key": "sr",
+      "doc_count": 47708,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "hist",
+            "doc_count": 12047
+          },
+          {
+            "key": "phil",
+            "doc_count": 7343
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 7335
+          },
+          {
+            "key": "droit",
+            "doc_count": 7081
+          },
+          {
+            "key": "lang",
+            "doc_count": 5312
+          },
+          {
+            "key": "scipo",
+            "doc_count": 4744
+          },
+          {
+            "key": "edu",
+            "doc_count": 4349
+          },
+          {
+            "key": "socio",
+            "doc_count": 4191
+          },
+          {
+            "key": "eco",
+            "doc_count": 4107
+          },
+          {
+            "key": "litt",
+            "doc_count": 4101
+          },
+          {
+            "key": "psy",
+            "doc_count": 3973
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 3887
+          },
+          {
+            "key": "geo",
+            "doc_count": 2749
+          },
+          {
+            "key": "art",
+            "doc_count": 2703
+          },
+          {
+            "key": "manag",
+            "doc_count": 2588
+          },
+          {
+            "key": "musiq",
+            "doc_count": 2413
+          },
+          {
+            "key": "demo",
+            "doc_count": 2072
+          },
+          {
+            "key": "relig",
+            "doc_count": 1777
+          },
+          {
+            "key": "envir",
+            "doc_count": 1657
+          },
+          {
+            "key": "archi",
+            "doc_count": 1638
+          },
+          {
+            "key": "archeo",
+            "doc_count": 1445
+          },
+          {
+            "key": "info",
+            "doc_count": 769
+          },
+          {
+            "key": "class",
+            "doc_count": 581
+          },
+          {
+            "key": "genre",
+            "doc_count": 439
+          },
+          {
+            "key": "stat",
+            "doc_count": 295
+          },
+          {
+            "key": "museo",
+            "doc_count": 201
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 24
+          }
+        ]
+      }
+    },
+    {
+      "key": "no",
+      "doc_count": 30300,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "edu",
+            "doc_count": 8186
+          },
+          {
+            "key": "hist",
+            "doc_count": 7116
+          },
+          {
+            "key": "socio",
+            "doc_count": 6948
+          },
+          {
+            "key": "phil",
+            "doc_count": 4016
+          },
+          {
+            "key": "lang",
+            "doc_count": 3950
+          },
+          {
+            "key": "litt",
+            "doc_count": 3293
+          },
+          {
+            "key": "art",
+            "doc_count": 3236
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 2488
+          },
+          {
+            "key": "psy",
+            "doc_count": 2023
+          },
+          {
+            "key": "scipo",
+            "doc_count": 1851
+          },
+          {
+            "key": "relig",
+            "doc_count": 1671
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 1610
+          },
+          {
+            "key": "archi",
+            "doc_count": 1488
+          },
+          {
+            "key": "droit",
+            "doc_count": 1315
+          },
+          {
+            "key": "musiq",
+            "doc_count": 1202
+          },
+          {
+            "key": "envir",
+            "doc_count": 1069
+          },
+          {
+            "key": "eco",
+            "doc_count": 992
+          },
+          {
+            "key": "manag",
+            "doc_count": 991
+          },
+          {
+            "key": "demo",
+            "doc_count": 847
+          },
+          {
+            "key": "geo",
+            "doc_count": 845
+          },
+          {
+            "key": "info",
+            "doc_count": 823
+          },
+          {
+            "key": "archeo",
+            "doc_count": 780
+          },
+          {
+            "key": "genre",
+            "doc_count": 625
+          },
+          {
+            "key": "class",
+            "doc_count": 409
+          },
+          {
+            "key": "museo",
+            "doc_count": 318
+          },
+          {
+            "key": "stat",
+            "doc_count": 107
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 28
+          }
+        ]
+      }
+    },
+    {
+      "key": "hu",
+      "doc_count": 30027,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "hist",
+            "doc_count": 10363
+          },
+          {
+            "key": "socio",
+            "doc_count": 3795
+          },
+          {
+            "key": "scipo",
+            "doc_count": 3773
+          },
+          {
+            "key": "litt",
+            "doc_count": 3508
+          },
+          {
+            "key": "eco",
+            "doc_count": 3455
+          },
+          {
+            "key": "lang",
+            "doc_count": 3228
+          },
+          {
+            "key": "phil",
+            "doc_count": 3146
+          },
+          {
+            "key": "droit",
+            "doc_count": 2694
+          },
+          {
+            "key": "art",
+            "doc_count": 2374
+          },
+          {
+            "key": "edu",
+            "doc_count": 2332
+          },
+          {
+            "key": "geo",
+            "doc_count": 2284
+          },
+          {
+            "key": "demo",
+            "doc_count": 2146
+          },
+          {
+            "key": "envir",
+            "doc_count": 2048
+          },
+          {
+            "key": "manag",
+            "doc_count": 1755
+          },
+          {
+            "key": "psy",
+            "doc_count": 1525
+          },
+          {
+            "key": "musiq",
+            "doc_count": 1347
+          },
+          {
+            "key": "relig",
+            "doc_count": 1242
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 1185
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 1074
+          },
+          {
+            "key": "archeo",
+            "doc_count": 897
+          },
+          {
+            "key": "archi",
+            "doc_count": 890
+          },
+          {
+            "key": "info",
+            "doc_count": 730
+          },
+          {
+            "key": "class",
+            "doc_count": 484
+          },
+          {
+            "key": "stat",
+            "doc_count": 362
+          },
+          {
+            "key": "museo",
+            "doc_count": 228
+          },
+          {
+            "key": "genre",
+            "doc_count": 212
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 67
+          }
+        ]
+      }
+    },
+    {
+      "key": "da",
+      "doc_count": 28088,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "hist",
+            "doc_count": 8071
+          },
+          {
+            "key": "edu",
+            "doc_count": 6040
+          },
+          {
+            "key": "phil",
+            "doc_count": 5253
+          },
+          {
+            "key": "socio",
+            "doc_count": 4095
+          },
+          {
+            "key": "lang",
+            "doc_count": 3709
+          },
+          {
+            "key": "litt",
+            "doc_count": 3323
+          },
+          {
+            "key": "art",
+            "doc_count": 2779
+          },
+          {
+            "key": "relig",
+            "doc_count": 2356
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 2222
+          },
+          {
+            "key": "scipo",
+            "doc_count": 1953
+          },
+          {
+            "key": "musiq",
+            "doc_count": 1685
+          },
+          {
+            "key": "psy",
+            "doc_count": 1369
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 1339
+          },
+          {
+            "key": "geo",
+            "doc_count": 977
+          },
+          {
+            "key": "droit",
+            "doc_count": 912
+          },
+          {
+            "key": "info",
+            "doc_count": 856
+          },
+          {
+            "key": "archeo",
+            "doc_count": 743
+          },
+          {
+            "key": "archi",
+            "doc_count": 743
+          },
+          {
+            "key": "genre",
+            "doc_count": 738
+          },
+          {
+            "key": "demo",
+            "doc_count": 554
+          },
+          {
+            "key": "eco",
+            "doc_count": 513
+          },
+          {
+            "key": "envir",
+            "doc_count": 482
+          },
+          {
+            "key": "manag",
+            "doc_count": 462
+          },
+          {
+            "key": "class",
+            "doc_count": 361
+          },
+          {
+            "key": "museo",
+            "doc_count": 358
+          },
+          {
+            "key": "stat",
+            "doc_count": 171
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 11
+          }
+        ]
+      }
+    },
+    {
+      "key": "he",
+      "doc_count": 3032,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "hist",
+            "doc_count": 1539
+          },
+          {
+            "key": "phil",
+            "doc_count": 927
+          },
+          {
+            "key": "lang",
+            "doc_count": 864
+          },
+          {
+            "key": "litt",
+            "doc_count": 667
+          },
+          {
+            "key": "relig",
+            "doc_count": 439
+          },
+          {
+            "key": "musiq",
+            "doc_count": 403
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 146
+          },
+          {
+            "key": "art",
+            "doc_count": 139
+          },
+          {
+            "key": "class",
+            "doc_count": 75
+          },
+          {
+            "key": "scipo",
+            "doc_count": 68
+          },
+          {
+            "key": "info",
+            "doc_count": 57
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 49
+          },
+          {
+            "key": "socio",
+            "doc_count": 42
+          },
+          {
+            "key": "geo",
+            "doc_count": 40
+          },
+          {
+            "key": "droit",
+            "doc_count": 28
+          },
+          {
+            "key": "edu",
+            "doc_count": 21
+          },
+          {
+            "key": "archeo",
+            "doc_count": 20
+          },
+          {
+            "key": "museo",
+            "doc_count": 18
+          },
+          {
+            "key": "genre",
+            "doc_count": 14
+          },
+          {
+            "key": "psy",
+            "doc_count": 11
+          },
+          {
+            "key": "stat",
+            "doc_count": 11
+          },
+          {
+            "key": "manag",
+            "doc_count": 7
+          },
+          {
+            "key": "archi",
+            "doc_count": 6
+          },
+          {
+            "key": "eco",
+            "doc_count": 5
+          },
+          {
+            "key": "demo",
+            "doc_count": 4
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 3
+          },
+          {
+            "key": "envir",
+            "doc_count": 1
+          }
+        ]
+      }
+    },
+    {
+      "key": "sq",
+      "doc_count": 2792,
+      "by_discipline": {
+        "buckets": [
+          {
+            "key": "lang",
+            "doc_count": 977
+          },
+          {
+            "key": "litt",
+            "doc_count": 894
+          },
+          {
+            "key": "hist",
+            "doc_count": 618
+          },
+          {
+            "key": "phil",
+            "doc_count": 388
+          },
+          {
+            "key": "socio",
+            "doc_count": 343
+          },
+          {
+            "key": "hisphilso",
+            "doc_count": 285
+          },
+          {
+            "key": "edu",
+            "doc_count": 234
+          },
+          {
+            "key": "art",
+            "doc_count": 192
+          },
+          {
+            "key": "anthro-se",
+            "doc_count": 176
+          },
+          {
+            "key": "envir",
+            "doc_count": 152
+          },
+          {
+            "key": "scipo",
+            "doc_count": 151
+          },
+          {
+            "key": "musiq",
+            "doc_count": 110
+          },
+          {
+            "key": "psy",
+            "doc_count": 109
+          },
+          {
+            "key": "eco",
+            "doc_count": 97
+          },
+          {
+            "key": "droit",
+            "doc_count": 92
+          },
+          {
+            "key": "geo",
+            "doc_count": 92
+          },
+          {
+            "key": "demo",
+            "doc_count": 77
+          },
+          {
+            "key": "archi",
+            "doc_count": 71
+          },
+          {
+            "key": "relig",
+            "doc_count": 67
+          },
+          {
+            "key": "manag",
+            "doc_count": 63
+          },
+          {
+            "key": "archeo",
+            "doc_count": 60
+          },
+          {
+            "key": "genre",
+            "doc_count": 51
+          },
+          {
+            "key": "stat",
+            "doc_count": 34
+          },
+          {
+            "key": "info",
+            "doc_count": 27
+          },
+          {
+            "key": "class",
+            "doc_count": 17
+          },
+          {
+            "key": "museo",
+            "doc_count": 6
+          },
+          {
+            "key": "anthro-bio",
+            "doc_count": 2
+          }
+        ]
+      }
+    }
+  ]
+}
