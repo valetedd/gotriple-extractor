@@ -2,4 +2,5 @@
 ./gotriple_dump/
 ./__pycache__/
 ./extracted_data/
+.env
 

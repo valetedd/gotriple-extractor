@@ -6,7 +6,9 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "click!=8.3.0",
+    "dotenv>=0.9.9",
     "gliner>=0.2.21",
+    "litellm>=1.80.0",
     "numpy<2.3",
     "pip>=25.3",
     "polars>=1.35.1",
