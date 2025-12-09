@@ -1,57 +1,81 @@
+import json
+import os
+from collections import defaultdict
+from pathlib import Path
+from time import time
 from typing import List
 
 import polars as pl
 
-from chunking import dump_to_text
-from extraction import *
+from extraction import EntityExtractor
 
 
-def main():
-    # NOTE:Assuming that chunking as been run
-
-    data: List[List[str]] = (
-        pl.scan_ndjson("./extracted_data/")
-        .select(pl.col("chunks"))
-        .collect()
-        .to_series()
-        .to_list()
+def extract_entities(
+    f: Path | str,
+    extractors: List[EntityExtractor],
+    discipline: str,
+    write_to: Path | str,
+) -> None:
+    data = (
+        pl.scan_ndjson(f).select(pl.col("in_language"), pl.col("text")).with_row_index()
     )
+    result = []
+    elapsed_total = defaultdict(float)
 
-    entity_types = [
-        "Person",
-        "Organization",
-        "Event",
-        "Place",  # schema:Place, dcterms:Location, cidoc:E53_Place
-        "Point of Interest",  # schema:Place, gn:Feature (geonames), cidoc:E27_Site
-        "Time Period",  # dcterms:PeriodOfTime, cidoc:E52_Time-Span
-        "Cultural Object",  # schema:CreativeWork, cidoc:E22_Man-Made_Object (or cidoc:E24_Physical_Man-Made_Thing)·
-        "Archival Metadata",  # dcterms:BibliographicResource? rico:Record or rico:RecordSet (RiC-O)?
-        "Citation",  # cito:Citation (Open Citations)
-        "Publication",  # triple:Document, fabio:Expression, foaf:Document
-        "Project",  # triple:Project, schema:ResearchProject, foaf:Project
-        "Dataset",  # triple:Dataset, schema:Dataset, dcat:Dataset
-        "Semantic Artefact",  # triple:SemanticArtefact, adms:SemanticAsset
-        "Software",  # triple:Software, swo:SWO_0000001 (Software ontology), schema:SoftwareSourceCode, schema:SoftwareApplication
-    ]
-    extr = EntityExtractor(
-        "gliner", model_name="knowledgator/gliner-x-large", entity_tags=entity_types
-    )
-    for doc in data:
-        page_entities = []
-        for page in doc:
+    for id, lang, doc in data.collect(engine="streaming").iter_rows():
+        for extr in extractors:
+            start = time()
+            ann_doc = extr.extract_doc(doc, id)
+            elapsed_total[extr.type] += time() - start
+            result.append(
+                {
+                    "doc_id": f"{discipline}_{ann_doc.doc_id}",
+                    "model": extr.type,
+                    "lang": lang,
+                    "ents": [
+                        (chunk.chunk_id, chunk.annotations) for chunk in ann_doc.chunks
+                    ],
+                }
+            )
 
-            for chunk in page:
-                if len(chunk) < 20:
-                    continue
-                chunk_entities = extr.extract(chunk)
-                print("==================")
-                print(f"Chunk: \n{chunk}")
-                print(f"\nEntities: {chunk_entities.annotations}")
-                print("==================")
-                print("\n\n")
-                if chunk_entities:
-                    page_entities.append(chunk_entities)
+    with open(f"{write_to}/{discipline}_time.json", mode="w", encoding="utf-8") as ot:
+        json.dump(elapsed_total, ot)
+
+    with open(f"{write_to}/{discipline}.json", mode="w", encoding="utf-8") as o:
+        json.dump(result, o)
+
+
+def main(path, output_dir, extractors: List[EntityExtractor]):
+    # NOTE: Assuming that acquisition as been run
+    os.makedirs(output_dir, exist_ok=True)
+    for file in Path(path).iterdir():  # Iterating over discipline-specific JSONs
+        discipline = file.name.split(".", maxsplit=1)[0]
+
+        print("Processing now: ", file.name)
+        extract_entities(file, extractors, discipline=discipline, write_to=output_dir)
 
 
 if __name__ == "__main__":
-    main()
+
+    entity_types = ["person name", "organization", "location name", "time references"]
+
+    extr_llm = EntityExtractor(
+        model_type="base-llm",
+        model_name="DeepSeek-V3.1-vLLM",
+        entity_tags=entity_types,
+        model_config={"temperature": 0.2},
+        prompt="./prompt.md",
+    )
+
+    # extr_spacy = EntityExtractor(model_type="spacy", model_name="xx_ent_wiki_sm")
+    # extr_gliner = EntityExtractor(
+    #     model_type="gliner",
+    #     model_name="knowledgator/gliner-x-large",
+    #     entity_tags=entity_types,
+    # )
+
+    main(
+        path="./dataset/extracted_2/",
+        output_dir="./annotated_test-rechunked/llm/",
+        extractors=[extr_llm],
+    )

@@ -2,18 +2,21 @@ import gc
 import gzip
 import json
 import os
+import re
 import string
 import threading
 import unicodedata
 from collections import Counter, defaultdict
 
 import regex
+from chonkie import RecursiveChunker
+from ftfy import fix_text
 
 stop_event = threading.Event()
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import BytesIO
 from pathlib import Path
-from typing import Iterable, List, Literal, Optional
+from typing import Generator, List, Literal, Optional
 
 import polars as pl
 import pymupdf
@@ -76,6 +79,16 @@ SCRIPT_REGEXES = {
 
 
 def get_ratios(stats_path: str):
+    """
+    Function that computes language ratios and for each discipline in a 
+    certain language within GoTriple data.
+
+    Parameters:
+        stats_path (str) a string-path to a JSON reporting aggregated document counts per language as a whole and disciplines in a certain language.
+
+    Returns: 
+        dict: a nested dictionary reporting the composition in percentages of the GoTriple data, by language as a whole and by disciplines in a certain language.
+    """
     with open(stats_path, mode="r") as f:
         data = json.load(f)
 
@@ -98,9 +111,29 @@ def get_ratios(stats_path: str):
     return ratios
 
 
-def is_good_pdf(chunks):
+def is_good_pdf(pages):
+    """
+    Applies a series of heuristics to determine whether to include a PDF in the dataset.
+    Criteria:
+        a) proportion of alphanumeric chars
+        b) number of detected scripts
+        c) unicodedata lib categories and names to detect junk chars (box draw etc.)
+        d) number of words
+
+    Parameters:
+        chunks (List[str]): collection of text blocks, as extracted via PyMuPDF.
+
+    Returns:
+        bool: responding to the question: is this a good PDF?
+    """
 
     def detect_script(char):
+        """
+        Helper used to analyse chars iteratively in a doc, determining if they belong to one of the 
+        scripts compiled in the constant SCRIPT_REGEXES.
+        
+        Heavily relies on the regex library.
+        """
         if char.isdigit() or char.isspace():
             return None
         if char in string.punctuation:
@@ -111,7 +144,7 @@ def is_good_pdf(chunks):
                 return script
         return "Other"
 
-    txt = " ".join(chunks).strip()
+    txt = " ".join(pages).strip()
     if not txt:
         return False
 
@@ -163,32 +196,110 @@ def is_good_pdf(chunks):
 
     return True
 
+def remove_headers_footers(pages):
+    """Remove repeated top/bottom lines across many pages."""
+    line_counts = {}
+    for page in pages:
+        lines = page.splitlines()
+        if not lines:
+            continue
+        # candidate header + footer lines
+        for l in [lines[0], lines[-1]]:
+            line_counts[l] = line_counts.get(l, 0) + 1
+
+    # lines seen on >= 30% of pages are likely headers/footers
+    threshold = max(2, int(len(pages) * 0.3))
+    hf_lines = {l for l, c in line_counts.items() if c >= threshold}
+
+    cleaned = []
+    for page in pages:
+        lines = page.splitlines()
+        new_lines = [l for l in lines if l not in hf_lines]
+        cleaned.append("\n".join(new_lines))
+    return cleaned
+
+
+def fix_hyphenation(text):
+    """Merge words broken by line hyphens."""
+    return re.sub(r"(\w+)-\n(\w+)", r"\1\2", text)
+
+
+def collapse_whitespace(text):
+    return re.sub(r"\s+\n", "\n", re.sub(r"[ \t]{2,}", " ", text))
+
+
+def is_gibberish(line):
+    """
+    Detect gibberish lines using:
+    - high ratio of non-alphanumeric chars
+    - unusual unicode categories
+    - absurd consonant clusters
+    """
+    if len(line) < 3:
+        return True
+
+    # too many symbols
+    symbol_ratio = sum(not c.isalnum() and not c.isspace() for c in line) / len(line)
+    if symbol_ratio > 0.4:
+        return True
+
+    # weird unicode categories
+    if regex.findall(r"\p{So}|\p{Cn}|\p{Cs}", line):
+        return True
+
+    # long consonant clusters (probable OCR noise)
+    if re.search(r"[bcdfghjklmnpqrstvwxyz]{6,}", line.lower()):
+        return True
+
+    return False
+
+
+def clean_page_text(page_text):
+    # normalize with ftfy
+    page_text = fix_text(page_text)
+
+    # fix hyphenation
+    page_text = fix_hyphenation(page_text)
+
+    # collapse whitespace
+    page_text = collapse_whitespace(page_text)
+
+    # remove gibberish lines
+    lines = page_text.splitlines()
+    lines = [l for l in lines if not is_gibberish(l.strip())]
+
+    # filter useless very short lines
+    lines = [l for l in lines if len(l.strip()) > 5]
+
+    return "\n".join(lines)
+
+
+
 
 def get_text(resp: BytesIO):
-    doc_blocks = []
+    """
+    Processes responses with PDF content with PyMuPDF, filtering out non-text content and small size PDFs.
+
+    Parameters:
+        resp (BytesIO): response recognized to be PDF content
+
+    Returns:
+        List[str]: list of text blocks (strings), with no demarcation between pages
+    """
+    doc_pages = []
     with pymupdf.open(stream=resp, filetype="pdf") as doc:
         if doc.page_count <= MIN_PAGES:
             raise ValueError("PDF resource discarded due to limited length")
-        for page in doc:
-            page_blocks = page.get_text("blocks", flags=pymupdf.TEXT_INHIBIT_SPACES)
-            # 6th position in block tuples represents the content type; 0 == text
-            blocks = [
-                txt_content
-                for b in page_blocks
-                if len(txt_content := b[4].strip()) >= MIN_BLOCK_LEN
-                and all(txt_content)
-                and b[6] == 0
-            ]
-            if not blocks:
-                break
-            doc_blocks.extend(blocks)
-    if not is_good_pdf(chunks=doc_blocks):
-        print(f"The following was not deemed a good PDF:\n{doc_blocks}")
+        doc_pages = [clean_page_text(page.get_text("text")) for page in doc]
+    if not is_good_pdf(pages=doc_pages):
+        print(f"The following was not deemed a good PDF:\n{doc_pages}")
         raise ValueError("PDF does not meet the criteria")
-    return doc_blocks
+    cleaned = remove_headers_footers(doc_pages)
+    return cleaned
 
 
-def write_to_buf(resp: requests.Response):
+def write_to_buf(resp: requests.Response) -> BytesIO:
+    """Helper that streams resp content to a buffer"""
     buf = BytesIO()
     for chunk in resp.iter_content(chunk_size=50000):
         if chunk:
@@ -198,6 +309,7 @@ def write_to_buf(resp: requests.Response):
 
 
 def is_pdf_file(buf: BytesIO) -> bool:
+    """Reads first bytes of a buffer to determine if a response is a PDF or not"""
     pos = buf.tell()
     buf.seek(0)
     header = buf.read(1024)  # read first 1KB
@@ -206,6 +318,15 @@ def is_pdf_file(buf: BytesIO) -> bool:
 
 
 def fetch_pdf(url: str):
+    """
+    Sends requests to an URL. If a simple one fails, a more complex one is issued.
+
+    Prameters:
+        url (str): url string.
+
+    Returns:
+        tuple(List[str], bool): text content and success/fail state of the request.
+    """
 
     if stop_event.is_set():
         return [""], False
@@ -280,7 +401,18 @@ def fetch_pdf(url: str):
     return [""], False
 
 
-def process_until_target(urls: Iterable, target: int) -> pl.LazyFrame | None:
+def process_until_target(urls: Generator, target: int) -> pl.LazyFrame | None:
+    """
+    Calls a fetch function on each PDF url, collecting the results and tracking failures of servers.
+    Stops when a certain target of successful fetches is reached.
+
+    Parameters:
+        urls  (Generator): generator yielding single urls
+        target (int): number of successful fetches having to be achieved. 
+
+    Returns:
+        pl.LazyFrame: concat of the content fetched through each URL.
+    """
     results = []
     success_count = 0
     try:
@@ -314,7 +446,7 @@ def process_until_target(urls: Iterable, target: int) -> pl.LazyFrame | None:
     return pl.LazyFrame(results).cast({"text": pl.List(pl.String)})
 
 
-def process_until_target_conc(urls: Iterable, target: int):
+def process_until_target_conc(urls: Generator, target: int):
     results = []
     success_count = 0
     with ThreadPoolExecutor(max_workers=10) as executor:

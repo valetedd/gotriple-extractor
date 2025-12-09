@@ -5,13 +5,18 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "chonkie>=1.4.2",
     "click!=8.3.0",
     "dotenv>=0.9.9",
+    "ftfy>=6.3.1",
     "gliner>=0.2.21",
     "litellm>=1.80.0",
     "numpy<2.3",
+    "openai>=2.8.1",
+    "pandas>=2.3.3",
     "pip>=25.3",
     "polars>=1.35.1",
+    "pydantic-ai>=1.22.0",
     "pymupdf>=1.26.5",
     "spacy>=3.8.7",
     "torch==2.8.0",
