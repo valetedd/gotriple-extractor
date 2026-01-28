@@ -42,7 +42,7 @@ def fix_broken(
         print(f"✔ Recovered {len(objects)} JSON objects → {out_path.name}")
 
 
-def merge_outputs(original_path, other_path, ignore=None, output_path=None):
+def merge_outputs(original_path, other_path, target_model=None, output_path=None):
     if not output_path:
         output_path = original_path
 
@@ -53,17 +53,23 @@ def merge_outputs(original_path, other_path, ignore=None, output_path=None):
     with open(other_path, "r", encoding="utf-8") as f:
         other = json.load(f)
 
-    # Convert other JSON to a dict by doc_id for fast lookup
+    # Convert spacy JSON to a dict by doc_id for fast lookup
     other_by_id = {doc["doc_id"]: doc for doc in other}
 
     merged = []
 
     for doc in orig:  # looping over doc data in original JSON
-        if ignore:
-            if doc["model"] in ignore:
+        if target_model:
+            if doc["model"] not in target_model:
                 merged.append(doc)
                 continue
-        doc_id = doc["doc_id"]
+        # Handling some accidental JSON key inconsistencies
+        if "chunk_id" in doc:
+            doc_id = doc["chunk_id"]
+            doc["doc_id"] = doc_id
+            del doc["chunk_id"]
+        else:
+            doc_id = doc["doc_id"]
 
         if doc_id not in other_by_id:
             print(
@@ -72,8 +78,8 @@ def merge_outputs(original_path, other_path, ignore=None, output_path=None):
             merged.append(doc)
             continue
 
-        correct_doc = other_by_id[doc_id]
-        merged.append(correct_doc)
+        final_doc = other_by_id[doc_id]
+        merged.append(final_doc)
 
     # Write output
     with open(output_path, "w", encoding="utf-8") as f:
@@ -103,46 +109,44 @@ def add_true_id(path: Path, discipline: str, out_path: str | Path | None = None)
     print(f"Saved new data to {out_path}")
 
 
-def clean_and_rechunk(chunker, overlap_ref, path: Path, out_dir):
-    if isinstance(out_dir, str):
-        out_path = Path(out_dir) / path.name
-    elif isinstance(out_dir, Path):
-        out_path = out_dir / path.name
-    else:
-        raise ValueError("output_path can only be a Path object or a string")
-    with open(path, "r", encoding="utf-8") as f:
-        data = [json.loads(line) for line in f]
+def clean_and_rechunk(path: Path, out_dir):
+    chunker = RecursiveChunker(
+        chunk_size=512,
+        min_characters_per_chunk=20,  # Avoids creating tiny artifact chunk
+    )
+    overlap_ref = OverlapRefinery(context_size=50)
+    os.makedirs(out_dir, exist_ok=True)
+    for f in Path(path).iterdir():
 
-    for obj in data:
-        reconstructed = " ".join(clean_page_text(b) for b in obj["text"])
-        chunks = chunker(reconstructed)
-        obj["text"] = [cleaned.text for cleaned in overlap_ref(chunks)]
-    pl.LazyFrame(data).sink_ndjson(out_path)
-    print(f"Saved new data to {out_path}")
+        if isinstance(out_dir, str):
+            out_path = Path(out_dir) / f.name
+        elif isinstance(out_dir, Path):
+            out_path = out_dir / f.name
+        else:
+            raise ValueError("output_path can only be a Path object or a string")
+        with open(f, "r", encoding="utf-8") as f:
+            data = [json.loads(line) for line in f]
+
+        for obj in data:
+            reconstructed = " ".join(clean_page_text(b) for b in obj["text"])
+            chunks = chunker(reconstructed)
+            obj["text"] = [cleaned.text for cleaned in overlap_ref(chunks)]
+        pl.LazyFrame(data).sink_ndjson(out_path)
+        print(f"Saved new data to {out_path}")
 
 
 if __name__ == "__main__":
-    ORI = "./annotated_test-rechunked/"
-    OTHER = "./annotated_test-rechunked/llm/"
-    OUT = "./merged/"
-    os.makedirs(OUT, exist_ok=True)
-    for file in Path(ORI).iterdir():
-        all = []
-
-        if "time" in file.name or not file.is_file():
-            continue
-        print("Processing now", file.name)
-        other_f = f"{OTHER}{file.name}"
-        print(f"Merging {file} with {other_f}")
-
+    # IN = "./dataset/extracted_data/"
+    # OUT = "./dataset/extracted_2/"
+    for file in Path("./dataset/extracted_2/").iterdir():
+        data = []
         with open(file, "r", encoding="utf-8") as f:
-            orig = json.load(f)
-
-        with open(other_f, "r", encoding="utf-8") as f:
-            other = json.load(f)
-
-        all.extend(orig)
-        all.extend(other)
-
-        with open(OUT + file.name, "w", encoding="utf-8") as f:
-            json.dump(all, f, indent=2, ensure_ascii=False)
+            for line in f:
+                data.append(json.loads(line))
+        prefix = file.name.removesuffix(".json")
+        for i, obj in enumerate(data):
+            print(type(obj))
+            print(obj)
+            obj["id"] = prefix + "_" + str(i)
+        with open(file, "w", encoding="utf-8") as o:
+            json.dump(data, o, indent=2, ensure_ascii=False)

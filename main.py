@@ -17,12 +17,12 @@ def extract_entities(
     write_to: Path | str,
 ) -> None:
     data = (
-        pl.scan_ndjson(f).select(pl.col("in_language"), pl.col("text")).with_row_index()
+        pl.read_json(f).select(pl.col("in_language"), pl.col("text")).with_row_index()
     )
     result = []
     elapsed_total = defaultdict(float)
 
-    for id, lang, doc in data.collect(engine="streaming").iter_rows():
+    for id, lang, doc in data.iter_rows():
         for extr in extractors:
             start = time()
             ann_doc = extr.extract_doc(doc, id)
@@ -49,6 +49,10 @@ def main(path, output_dir, extractors: List[EntityExtractor]):
     # NOTE: Assuming that acquisition as been run
     os.makedirs(output_dir, exist_ok=True)
     for file in Path(path).iterdir():  # Iterating over discipline-specific JSONs
+        if file.name in [
+            f.name for f in Path(output_dir).iterdir()
+        ]:  # useful for stopping and resuming
+            continue
         discipline = file.name.split(".", maxsplit=1)[0]
 
         print("Processing now: ", file.name)
@@ -57,7 +61,40 @@ def main(path, output_dir, extractors: List[EntityExtractor]):
 
 if __name__ == "__main__":
 
-    entity_types = ["person name", "organization", "location name", "time references"]
+    #####################  AS PER DELIVERABLE ####################
+    # "Person",
+    # "Organization",
+    # "Event",
+    # "Place",
+    # "Point of Interest",
+    # "Time Period",
+    # "Cultural Object",
+    # "Archival Metadata",
+    # "Citation",
+    # "Publication",
+    # "Project",
+    # "Dataset",
+    # "Semantic Artefact",
+    # "Software",
+
+    ###################################
+
+    entity_types = [
+        "Person",
+        "Organization",
+        "Event",
+        "Place",
+        "Point_of_Interest",
+        "Time",
+        "Cultural_Object",
+        "Archival_Metadata",
+        "Citation",
+        "Publication_title",
+        "Project",
+        "Dataset",
+        "Semantic_Artefact (ontology or vocabulary)",
+        "Software",
+    ]
 
     extr_llm = EntityExtractor(
         model_type="base-llm",
@@ -68,14 +105,15 @@ if __name__ == "__main__":
     )
 
     # extr_spacy = EntityExtractor(model_type="spacy", model_name="xx_ent_wiki_sm")
-    # extr_gliner = EntityExtractor(
-    #     model_type="gliner",
-    #     model_name="knowledgator/gliner-x-large",
-    #     entity_tags=entity_types,
-    # )
+    extr_gliner = EntityExtractor(
+        model_type="gliner",
+        model_name="knowledgator/gliner-x-large",
+        entity_tags=entity_types,
+        model_config={"threshold": 0.6},
+    )
 
     main(
         path="./dataset/extracted_2/",
-        output_dir="./annotated_test-rechunked/llm/",
-        extractors=[extr_llm],
+        output_dir="./annotated_test-full/",
+        extractors=[extr_llm, extr_gliner],
     )

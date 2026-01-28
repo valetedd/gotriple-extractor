@@ -4,4 +4,4 @@
 ./extracted_data/
 .env
 ./pyrightconfig.json
-
+./GENRE/

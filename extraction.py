@@ -12,7 +12,6 @@ load_dotenv()
 import os
 
 from gliner import GLiNER
-from litellm import acompletion, completion
 from openai import AsyncOpenAI
 
 from data_repr import *
@@ -110,11 +109,6 @@ class GlinerEntityExtractor:
             raise ValueError(
                 "A set of entity tags has to be specified for GLiNER to work correctly"
             )
-        # config = GLiNERConfig.from_pretrained(gliner_model)
-        # if gliner_config:
-        #     config.__dict__.update(gliner_config)
-        # tokenizer = AutoTokenizer.from_pretrained(config.model_name)
-        # self.model = GLiNER(config=config, tokenizer=tokenizer).to(DEVICE)
         from huggingface_hub import snapshot_download
 
         local_path = snapshot_download(
@@ -307,13 +301,13 @@ class LLMExtractor:
 
         try:
             response = self.client.chat.completions.create(
-                    model=self.model_name,
-                    messages=[
-                        {"role": "system", "content": self.prompt},
-                        {"role": "user", "content": data},
-                    ],
-                    **(self.config or {}),
-                )
+                model=self.model_name,
+                messages=[
+                    {"role": "system", "content": self.prompt},
+                    {"role": "user", "content": data},
+                ],
+                **(self.config or {}),
+            )
             response_content = response.choices[0].message.content
             return AnnotatedChunk(
                 chunk_id=chunk_id,
@@ -328,7 +322,11 @@ class LLMExtractor:
             )
 
     async def extract_async(
-        self, data: str, chunk_id: int = 0, semaphore: asyncio.Semaphore | None = None
+        self,
+        data: str,
+        attempts: int,
+        chunk_id: int = 0,
+        semaphore: asyncio.Semaphore | None = None,
     ) -> AnnotatedChunk:
         """Async extraction for a single chunk with concurrency control."""
         if semaphore is None:
@@ -337,30 +335,36 @@ class LLMExtractor:
             )
 
         async with semaphore:
-            try:
-                response = await self.client.chat.completions.create(
-                    model=self.model_name,
-                    messages=[
-                        {"role": "system", "content": self.prompt},
-                        {"role": "user", "content": data},
-                    ],
-                    **(self.config or {}),
-                )
-                response_content = response.choices[0].message.content
-                return AnnotatedChunk(
-                    chunk_id=chunk_id,
-                    span=data,
-                    annotations=ast.literal_eval(response_content),
-                    annotation_t=self.task,
-                )
-            except Exception as e:
-                print(f"{e}: failed to extract text for chunk {chunk_id}!")
-                return AnnotatedChunk(
-                    chunk_id=chunk_id, span=data, annotations=[], annotation_t=self.task
-                )
+            for _ in range(attempts):
+                try:
+                    response = await self.client.chat.completions.create(
+                        model=self.model_name,
+                        messages=[
+                            {"role": "system", "content": self.prompt},
+                            {"role": "user", "content": data},
+                        ],
+                        **(self.config or {}),
+                    )
+                    response_content = response.choices[0].message.content
+                    return AnnotatedChunk(
+                        chunk_id=chunk_id,
+                        span=data,
+                        annotations=ast.literal_eval(response_content),
+                        annotation_t=self.task,
+                    )
+                except Exception as e:
+                    print(f"{e}: failed to extract text for chunk {chunk_id}!")
+
+            return AnnotatedChunk(
+                chunk_id=chunk_id, span=data, annotations=[], annotation_t=self.task
+            )
 
     def extract_doc(
-        self, data: List[str], doc_id: int = 0, max_concurrent: int = 10
+        self,
+        data: List[str],
+        doc_id: int = 0,
+        max_concurrent: int = 20,
+        attempts: int = 3,
     ) -> Document:
         """Extract entities from all chunks in a document using async."""
 
@@ -373,7 +377,7 @@ class LLMExtractor:
 
         # Create tasks for all chunks
         tasks = [
-            self.extract_async(chunk, chunk_id, semaphore)
+            self.extract_async(chunk, attempts, chunk_id, semaphore)
             for chunk_id, chunk in enumerate(data)
         ]
 
