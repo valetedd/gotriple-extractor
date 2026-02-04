@@ -1,18 +1,21 @@
-import ast
 import asyncio
-from abc import abstractmethod
-from dataclasses import dataclass
-from typing import Any, Dict, Literal, Optional, Protocol
+import json
+from abc import ABC, abstractmethod
+from ast import literal_eval
+from pathlib import Path
+from typing import Any, Dict, Literal, Optional
 
 import spacy
 import torch
 from dotenv import load_dotenv
+from glirel import GLiREL
+from pydantic import TypeAdapter, ValidationError
 
 load_dotenv()
 import os
 
 from gliner import GLiNER
-from openai import AsyncOpenAI
+from openai import AsyncOpenAI, OpenAI
 
 from data_repr import *
 
@@ -20,10 +23,16 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {DEVICE}")
 
 
-class Extractor(Protocol):
+class Extractor(ABC):
     """
     Abstract class defining a shared method for extraction
     """
+
+    def __init__(self, model_type, model_name, labels, config):
+        self.type = model_type
+        self.name = model_name
+        self.labels = labels
+        self.config = config
 
     @abstractmethod
     def extract(self, data: str, chunk_id: int = 0) -> AnnotatedChunk: ...
@@ -32,7 +41,7 @@ class Extractor(Protocol):
     def extract_doc(self, data: List[str], doc_id: int = 0) -> Document: ...
 
 
-class EntityExtractor:
+class EntityExtractor(Extractor):
     """
     Class for entity extraction methods.
     """
@@ -46,10 +55,9 @@ class EntityExtractor:
         prompt: Optional[str] = None,
         prompt_vars: Optional[Dict[str, Any]] = None,
     ):
-        self.type = model_type
-        self.name = model_name
-        self.tags = entity_tags
+        super().__init__(model_type, model_name, entity_tags, model_config)
         self.prompt = prompt
+        self.config = model_config
         self._model = self._load_model(
             model_config=model_config, prompt_vars=prompt_vars
         )
@@ -73,13 +81,13 @@ class EntityExtractor:
             case "gliner":
                 return GlinerEntityExtractor(
                     gliner_model=self.name,
-                    entity_tags=self.tags,
+                    entity_tags=self.labels,
                     gliner_config=(model_config or {}),
                 )
             case "spacy":
                 return SpacyEntityExtractor(
                     spacy_model=self.name,
-                    entity_tags=self.tags,
+                    entity_tags=self.labels,
                 )
             case "base-llm":
                 if not self.prompt:
@@ -87,7 +95,7 @@ class EntityExtractor:
                 return LLMExtractor(
                     prompt=self.prompt,
                     model_name=self.name,
-                    entity_tags=self.tags,
+                    entity_tags=self.labels,
                     config=model_config,
                     task="ent",
                     prompt_variables=prompt_vars,
@@ -116,22 +124,22 @@ class GlinerEntityExtractor:
             local_files_only=True,  # Don't download, just get the cache path
         )
         self.config = gliner_config
-        self.tags = entity_tags
+        self.labels = entity_tags
         self.model: GLiNER = GLiNER.from_pretrained(
             pretrained_model_name_or_path=local_path,
             map_location=DEVICE,
         ).to(DEVICE)
 
     def extract(self, data: str, chunk_id: int = 0):
-        entities = self.model.predict_entities(data, self.tags, **(self.config or {}))
+        entities = self.model.predict_entities(data, self.labels, **(self.config or {}))
         annotations = [ent for ent in entities]
         return AnnotatedChunk(
             chunk_id=chunk_id, span=data, annotations=annotations, annotation_t="ent"
         )
 
-    def extract_doc(self, data: List[str], doc_id: int = 0) -> Document:
+    def extract_doc(self, data: List[str], doc_id: int = 0, **kwargs) -> Document:
         result = []
-        preds = self.model.run(data, self.tags, **(self.config or {}))
+        preds = self.model.run(data, self.labels, **(self.config or {}))
         for i, (chunk_ents, b) in enumerate(zip(preds, data)):
             ann_chunk = AnnotatedChunk(
                 chunk_id=i, span=b, annotations=chunk_ents, annotation_t="ent"
@@ -151,14 +159,14 @@ class SpacyEntityExtractor:
         entity_tags: List[str] | None,
     ) -> None:
         self.model = spacy.load(spacy_model)
-        self.tags = self.validate_tags(entity_tags)
+        self.labels = self.validate_tags(entity_tags)
 
     def extract(self, data, chunk_id: int) -> AnnotatedChunk:
         nlp = self.model(data)
         entities = []
         for ent in nlp.ents:
-            if self.tags:
-                if not ent.label_ in self.tags:
+            if self.labels:
+                if not ent.label_ in self.labels:
                     continue
             annotation = {
                 "start": ent.start,
@@ -218,7 +226,7 @@ class RelationExtractor:
         self.type = model_type
         self.name = model_name
         self._model = self._load_model(model_config)
-        self.tags = relation_tags
+        self.labels = relation_tags
         self.prompt = prompt
         self.prompt_vars = prompt_vars
 
@@ -236,14 +244,11 @@ class RelationExtractor:
                 return LLMExtractor(
                     prompt=self.prompt,
                     model_name=self.name,
-                    entity_tags=self.tags,
+                    entity_tags=self.labels,
                     config=(model_config or {}),
                     task="rel",
                     prompt_variables=self.prompt_vars,
                 )
-
-            case "rebel":
-                return
 
             case "glirel":
                 return
@@ -252,7 +257,34 @@ class RelationExtractor:
                 raise ValueError(f"Unknown model: {self.type}")
 
 
+class GlirelExtractor:
+    def __init__(
+        self,
+        gliner_model: str,
+        relation_labels: List[str] | None,
+        glirel_config: Optional[Dict[str, Any]] = None,
+    ) -> None:
+
+        if not relation_labels:
+            raise ValueError(
+                "A set of entity tags has to be specified for GLiNER to work correctly"
+            )
+        from huggingface_hub import snapshot_download
+
+        local_path = snapshot_download(
+            repo_id=gliner_model,
+            local_files_only=True,  # Don't download, just get the cache path
+        )
+        self.config = glirel_config
+        self.labels = relation_labels
+        self.model: GLiREL = GLiREL.from_pretrained(
+            pretrained_model_name_or_path=local_path,
+            map_location=DEVICE,
+        ).to(DEVICE)
+
+
 class LLMExtractor:
+
     def __init__(
         self,
         prompt: str,
@@ -261,11 +293,12 @@ class LLMExtractor:
         config: Optional[Dict[str, Any]],
         task: Literal["ent", "rel", "triple"],
         prompt_variables: Optional[Dict[str, Any]] = None,
+        asynch: bool = True
     ) -> None:
 
         if not task in ["ent", "rel", "triple"]:
             raise ValueError(
-                f"An unsupported task was specified for this extractor: {task}. It can either be 'ent', 'rel' or 'triple'"
+                f"An unsupported task was specified for this extractor: {task}. It must be one of 'ent', 'rel' or 'triple'"
             )
 
         if not prompt_variables:
@@ -273,7 +306,7 @@ class LLMExtractor:
         else:
             prompt_variables["ENTITY_TAGS"] = entity_tags
         self.prompt = self._get_formatted_prompt(prompt, prompt_variables)
-        self.tags = entity_tags
+        self.labels = entity_tags
         self.config = config
         self.model_name = model_name
         if task not in ["ent", "rel", "triple"]:
@@ -281,10 +314,21 @@ class LLMExtractor:
                 "'task' parameter has to have one of these values: ['ent', 'rel', 'triple']"
             )
         self.task = task
-        self.client = AsyncOpenAI(
-            base_url="https://llm.graphia-ssh.eu/v1/",
-            api_key=os.environ.get("API_KEY"),
-        )
+        if asynch:
+            self.client = AsyncOpenAI(
+                base_url="https://llm.graphia-ssh.eu/v1/",
+                api_key=os.environ.get("API_KEY"),
+            )
+        else: 
+            self.client = OpenAI(
+                base_url="https://llm.graphia-ssh.eu/v1/",
+                api_key=os.environ.get("API_KEY"),
+            )
+        item_schema = {"ent": Entity, "rel": Relation, "triple": Triple}[self.task]
+
+        # Create a TypeAdapter for List[ItemSchema]
+        self.adapter = TypeAdapter(list[item_schema])
+
         available_models = os.environ.get("AVAILABLE_MODELS")
         if available_models and not any(
             [
@@ -297,29 +341,35 @@ class LLMExtractor:
                 "Unsupported model was specified. Try selecting another one"
             )
 
-    def extract(self, data: str, chunk_id: int = 0) -> AnnotatedChunk:
+    def _parse_and_validate(self, raw: str):
 
         try:
-            response = self.client.chat.completions.create(
-                model=self.model_name,
-                messages=[
-                    {"role": "system", "content": self.prompt},
-                    {"role": "user", "content": data},
-                ],
-                **(self.config or {}),
+            data = json.loads(raw)
+        except json.JSONDecodeError:
+            print("Invalid JSON output")
+            print("Using literal_eval instead")
+            data = literal_eval(raw)
+
+        try:
+            validated_items = self.adapter.validate_python(data)
+
+            # Convert validated Pydantic objects back to dicts
+            return [item.model_dump() for item in validated_items]
+
+        except ValidationError as e:
+            raise ValueError(f"Schema validation failed: {e}") from e
+
+    def extract(
+        self, data: str, chunk_id: int = 0, attempts: int = 3
+    ) -> AnnotatedChunk:
+
+        semaphore = asyncio.Semaphore(1)
+
+        return asyncio.run(
+            self.extract_async(
+                data=data, chunk_id=chunk_id, attempts=attempts, semaphore=semaphore
             )
-            response_content = response.choices[0].message.content
-            return AnnotatedChunk(
-                chunk_id=chunk_id,
-                span=data,
-                annotations=ast.literal_eval(response_content),
-                annotation_t=self.task,
-            )
-        except Exception as e:
-            print(f"{e}: failed to extract text!")
-            return AnnotatedChunk(
-                chunk_id=chunk_id, span=data, annotations=[], annotation_t=self.task
-            )
+        )
 
     async def extract_async(
         self,
@@ -333,6 +383,7 @@ class LLMExtractor:
             raise TypeError(
                 "For async version of extract you need to specify a semaphore object. Use 'extract' instead for a synchronous implementation"
             )
+        response_content = None
 
         async with semaphore:
             for _ in range(attempts):
@@ -345,16 +396,23 @@ class LLMExtractor:
                         ],
                         **(self.config or {}),
                     )
-                    response_content = response.choices[0].message.content
+                    response_content = self._clean_response(
+                        response.choices[0].message.content
+                    )
+
+                    validated = self._parse_and_validate(response_content)
                     return AnnotatedChunk(
                         chunk_id=chunk_id,
                         span=data,
-                        annotations=ast.literal_eval(response_content),
+                        annotations=validated,
                         annotation_t=self.task,
                     )
                 except Exception as e:
                     print(f"{e}: failed to extract text for chunk {chunk_id}!")
+                    print("Response was:\n", response_content)
+                    print("Retrying ...")
 
+            print("Max attempts reached, returning with no predictions")
             return AnnotatedChunk(
                 chunk_id=chunk_id, span=data, annotations=[], annotation_t=self.task
             )
@@ -387,27 +445,42 @@ class LLMExtractor:
         return Document(doc_id=doc_id, chunks=chunks)
 
     @staticmethod
+    def _clean_response(resp: str):
+
+        # Cleaning responses with reasoning tokens
+        if "</think>" in resp:
+            resp = resp.split("</think>")[1]
+        if not (resp.startswith("[") and resp.endswith("]")):
+
+            resp = resp.strip("```").strip("json")
+
+
+        return resp
+
+    @staticmethod
     def _get_formatted_prompt(prompt, prompt_variables):
-        if not isinstance(prompt, str):
-            raise TypeError("'prompt' must be a string")
-        if os.path.isfile(prompt):
-            with open(prompt, mode="r", encoding="utf-8") as f:
-                prompt = f.read()
-        if prompt_variables:
-            throw = False
-            not_included_ks = []
-            for k in prompt_variables.keys():
-                if k not in prompt:
-                    if not throw:
-                        throw = True
-                        not_included_ks.append(k)
-            if throw:
-                raise ValueError(
-                    f"The following variables were not found in the prompt:\n {not_included_ks}"
-                )
-            return prompt.format(**prompt_variables)
+        if not isinstance(prompt, (str, Path)):
+            raise TypeError("'prompt' parameter must be a string or a Path object")
+        if not os.path.isfile(prompt):
+            raise ValueError("Prompt path does not point to a valid file")
 
+        with open(prompt, mode="r", encoding="utf-8") as f:
+            prompt_content = f.read()
 
+        for key, value in prompt_variables.items():
+            placeholder = f"{{{key}}}"  # Match the placeholder format {key}
+            prompt_content = prompt_content.replace(placeholder, str(value))
+
+        # Check for any unresolved placeholders
+        unresolved_placeholders = [
+            var for var in prompt_content.split() if var.startswith("{") and var.endswith("}")
+        ]
+        if unresolved_placeholders:
+            raise ValueError(
+                f"The following placeholders were not resolved in the prompt: {unresolved_placeholders}"
+            )
+
+        return prompt_content
 class JointExtractor:
     """
     Class for joint triplet extraction implementations, with fused entity and
@@ -420,7 +493,7 @@ class JointExtractor:
         entity_tags: List[str] | None,
     ):
         self.model_name = model_name
-        self.tags = entity_tags
+        self.labels = entity_tags
         self._model = self._load_model()
 
     def extract(self, data) -> AnnotatedChunk:
@@ -440,7 +513,7 @@ class JointExtractor:
 @dataclass
 class ModularExtractor:
     """
-    Dataclass for two-component pipeline implementations, with distinct entity
+    Dataclass for two-component end-to-end pipeline implementations, with distinct entity
     and relation extractors.
 
     Fields
@@ -470,9 +543,15 @@ if __name__ == "__main__":
     # Aailable models: DeepSeek-V3.1-vLLM; Qwen3-Coder-30B-A3B-Instruct-Q8_0
     extr = EntityExtractor(
         model_type="base-llm",
-        model_name="DeepSeek-V3.1-vLLM",
+        model_name="Qwen3-Coder-30B-A3B-Instruct-Q8_0",
         entity_tags=entity_types,
-        model_config={"temperature": 0.2},
+        model_config={
+            "temperature": 0.2,
+            "extra_body": {
+                "chat_template_kwargs": {"thinking": True},
+                "max_reasoning_tokens": 128,
+            },
+        },
         prompt="./prompt.md",
     )
     print("============ LLM ============\n")

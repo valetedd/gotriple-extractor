@@ -1,7 +1,6 @@
 ./.venv/
 ./gotriple_dump/
 ./__pycache__/
-./extracted_data/
 .env
 ./pyrightconfig.json
-./GENRE/
+./annotated_test-rechunked/

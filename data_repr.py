@@ -1,21 +1,9 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List, Literal, Sequence, TypeAlias, Union
+from typing import Any, List, Literal, Sequence
 
 from pydantic import BaseModel, Field
 
-
-@dataclass
-class AnnotatedChunk:
-    chunk_id: int
-    span: str
-    annotations: List[Dict[str, Any]]
-    annotation_t: Literal["ent", "rel", "triple"]
-
-
-@dataclass
-class Document:
-    doc_id: int
-    chunks: Sequence[AnnotatedChunk]
+### PYDANTIC SCHEMAS
 
 
 class Entity(BaseModel):
@@ -26,7 +14,27 @@ class Entity(BaseModel):
     score: float = Field(ge=0.0, le=1.0, description="Confidence score")
 
 
-class ExtractedEntities(BaseModel):
-    """Container for extracted entities"""
+class Relation(BaseModel):
+    head: Entity
+    tail: Entity
+    type: str
 
-    entities: List[Entity]
+
+class Triple(BaseModel):
+    subject: Entity
+    predicate: Relation
+    object: Entity
+
+
+@dataclass
+class AnnotatedChunk:
+    chunk_id: int
+    span: str
+    annotations: List[Entity] | List[Relation] | List[Triple]
+    annotation_t: Literal["ent", "rel", "triple"]
+
+
+@dataclass
+class Document:
+    doc_id: int
+    chunks: Sequence[AnnotatedChunk]

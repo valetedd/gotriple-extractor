@@ -101,7 +101,9 @@ def convert_dataset(
 
 
 def main():
-    multinerd = pd.read_parquet("./benchmarking_data/original_datasets/multinerd/")
+    multinerd = pd.read_parquet(
+        "./benchmarking_data/original_datasets/multinerd_val.parquet"
+    )
     multiconer: pd.DataFrame = load_dataset(
         "multiconer/multiconer_v2", "Multilingual (MULTI)", trust_remote_code=True
     )["train"].to_pandas()

@@ -1,0 +1,97 @@
+model,gold_label,pred_label,count
+gliner,Location,Organization,2928
+gliner,Cultural Object,Time,2588
+gliner,Cultural Object,Event,2560
+llm,Cultural Object,Time,2206
+llm,Location,Cultural Object,2202
+llm,Location,Organization,2012
+gliner,Cultural Object,Organization,1986
+llm,Cultural Object,Organization,1473
+gliner,Time,Event,1450
+gliner,Organization,Location,1282
+llm,Time,Event,1268
+gliner,Location,Cultural Object,1168
+gliner,Software,Organization,1091
+gliner,Organization,Person,1032
+llm,Organization,Cultural Object,944
+llm,Organization,Location,909
+gliner,Organization,Cultural Object,693
+gliner,Cultural Object,Person,620
+gliner,Person,Cultural Object,606
+llm,Cultural Object,Event,568
+gliner,Organization,Event,444
+gliner,Person,Organization,407
+gliner,Cultural Object,Location,393
+llm,Organization,Person,369
+llm,Cultural Object,Person,359
+llm,Person,Cultural Object,348
+gliner,Person,Location,332
+llm,Software,Organization,302
+llm,Organization,Event,266
+gliner,Software,Event,264
+llm,Time,Cultural Object,230
+llm,Person,Organization,219
+gliner,Event,Organization,190
+llm,Software,Cultural Object,163
+gliner,Location,Person,154
+gliner,Cultural Object,Software,150
+gliner,Location,Event,138
+llm,Organization,Software,134
+gliner,Event,Location,134
+llm,Location,Event,134
+llm,Event,Organization,127
+llm,Cultural Object,Software,121
+llm,Event,Location,118
+gliner,Software,Cultural Object,90
+gliner,Time,Cultural Object,88
+llm,Cultural Object,Location,83
+gliner,Person,Event,79
+gliner,Organization,Software,71
+gliner,Dataset,Software,71
+llm,Location,Person,63
+gliner,Time,Location,54
+llm,Person,Location,51
+gliner,Organization,Time,50
+gliner,Event,Time,48
+gliner,Software,Location,45
+llm,Event,Time,42
+llm,Organization,Time,38
+gliner,Time,Person,36
+llm,Event,Cultural Object,35
+gliner,Software,Dataset,33
+llm,Location,Time,28
+gliner,Event,Person,28
+gliner,Location,Time,26
+llm,Person,Event,23
+llm,Cultural Object,Dataset,22
+gliner,Software,Person,22
+gliner,Time,Organization,20
+llm,Event,Person,20
+llm,Time,Organization,19
+gliner,Person,Time,18
+llm,Location,Software,13
+llm,Software,Event,13
+llm,Person,Software,13
+llm,Software,Dataset,12
+gliner,Cultural Object,Dataset,12
+gliner,Dataset,Organization,10
+llm,Dataset,Software,9
+gliner,Dataset,Cultural Object,9
+gliner,Location,Software,9
+gliner,Event,Cultural Object,8
+llm,Time,Location,8
+gliner,Dataset,Event,7
+llm,Time,Person,6
+llm,Person,Time,6
+gliner,Person,Software,5
+gliner,Organization,Dataset,4
+gliner,Software,Time,4
+gliner,Location,Dataset,3
+llm,Software,Person,3
+gliner,Event,Software,2
+llm,Organization,Dataset,2
+llm,Person,Dataset,2
+llm,Software,Location,2
+llm,Time,Dataset,1
+llm,Time,Software,1
+llm,Event,Software,1
