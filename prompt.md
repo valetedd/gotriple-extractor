@@ -9,7 +9,7 @@ Each entity object MUST have exactly these keys (no extra keys):
 - "label": string — must be one of: {ENTITY_TAGS}
 - "start": integer — starting character offset of the entity span (0-based)
 - "end": integer — ending character offset (exclusive)
-- "score": number — float between 0.0 and 1.0 (inclusive)
+- "confidence": number — float between 0.0 and 1.0 (inclusive)
 
 **Methodology
 Think step by step internally:
