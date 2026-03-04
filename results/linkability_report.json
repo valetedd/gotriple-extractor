@@ -1,0 +1,32 @@
+{
+  "pred_final_dir": "annotated_test-final",
+  "pred_full_dir": "annotated_test-full",
+  "llm_links": "linking/mgenre_base-llm.json",
+  "gliner_links": "linking/mgenre_gliner.json",
+  "target_labels": [
+    "Person",
+    "Organization",
+    "Event",
+    "Place",
+    "Point of Interest",
+    "Time",
+    "Creative Work",
+    "Archival Metadata",
+    "Citation",
+    "Publication title",
+    "Project",
+    "Dataset",
+    "Semantic Web vocabulary",
+    "Software"
+  ],
+  "common_pred_chunks": 72592,
+  "common_link_chunks": 23311,
+  "final_common_chunks": 15370,
+  "models_reported": [
+    "GLiNER",
+    "LLM average"
+  ],
+  "top_percent": 40.0,
+  "llm_conf_threshold_top_percent": 0.9039193391799927,
+  "gliner_conf_threshold_top_percent": 0.9038079977035522
+}

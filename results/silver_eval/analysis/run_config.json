@@ -1,0 +1,24 @@
+{
+  "silver_dir": "silver_standard/annotated_judged",
+  "pred_final_dir": "annotated_test-final",
+  "pred_full_dir": "annotated_test-full",
+  "bootstrap_iters": 200,
+  "seed": 42,
+  "max_files": null,
+  "target_labels": [
+    "Person",
+    "Organization",
+    "Event",
+    "Place",
+    "Point of Interest",
+    "Time",
+    "Creative Work",
+    "Archival Metadata",
+    "Citation",
+    "Publication title",
+    "Project",
+    "Dataset",
+    "Semantic Web vocabulary",
+    "Software"
+  ]
+}

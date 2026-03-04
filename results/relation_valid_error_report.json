@@ -1,0 +1,18 @@
+{
+  "generated_at_utc": "2026-02-16T16:00:51.752225+00:00",
+  "input_file": "results/glirel_relation_sample.json",
+  "counts": {
+    "total_items": 500,
+    "items_with_relations": 30,
+    "total_relations": 53,
+    "valid_1": 18,
+    "valid_0": 35,
+    "missing_valid": 0,
+    "non_binary_valid": 0,
+    "labeled_relations": 53
+  },
+  "metrics": {
+    "error_rate_invalid_over_labeled": 0.660377358490566,
+    "error_rate_percent": 66.0377358490566
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "scenario": "baseline",
+  "description": "No filtering on gold or predictions",
+  "apply_gold_label_thresholds": false,
+  "apply_prediction_global_threshold": null,
+  "bootstrap_iters": 200
+}

@@ -1,0 +1,3 @@
+model,aligned_chunks,chunks_with_entities,chunks_with_any_linked_entity,total_entities,linked_entities,linkability_rate,top_percent,linker_conf_threshold_top_percent,linked_entities_top_percent,linkability_rate_top_percent
+GLiNER,15370,15370,15370,105235,60196,0.5720150140162493,40.0,0.9038079977035522,26927,0.25587494654820164
+LLM average,15370,9927,9764,89253,46670,0.5138633362371196,40.0,0.9039193391799927,21106,0.2343437502887713

@@ -1,0 +1,160 @@
+model,gold_label,pred_label,count
+llm,Creative Work,Publication title,468.8
+llm,Publication title,Creative Work,260.8
+llm,Point of Interest,Place,145.2
+llm,Organization,Place,117.4
+llm,Organization,Project,61.0
+llm,Archival Metadata,Citation,57.6
+llm,Archival Metadata,Publication title,56.6
+llm,Organization,Archival Metadata,55.6
+llm,Semantic Web vocabulary,Creative Work,55.2
+llm,Place,Organization,53.4
+llm,Archival Metadata,Project,49.8
+llm,Citation,Publication title,47.8
+llm,Archival Metadata,Organization,45.4
+llm,Creative Work,Semantic Web vocabulary,39.8
+llm,Person,Creative Work,36.6
+llm,Organization,Creative Work,30.0
+llm,Archival Metadata,Creative Work,29.4
+llm,Publication title,Archival Metadata,29.2
+llm,Organization,Publication title,27.0
+llm,Semantic Web vocabulary,Dataset,26.2
+llm,Organization,Person,25.4
+llm,Publication title,Event,25.0
+llm,Time,Publication title,23.8
+llm,Creative Work,Event,22.6
+gliner,Point of Interest,Place,22.0
+llm,Creative Work,Person,20.4
+llm,Publication title,Citation,19.2
+llm,Publication title,Project,18.0
+llm,Citation,Archival Metadata,17.0
+llm,Person,Organization,16.8
+llm,Project,Publication title,16.4
+llm,Point of Interest,Creative Work,15.6
+llm,Software,Project,15.6
+llm,Time,Event,14.2
+llm,Place,Creative Work,14.2
+gliner,Event,Organization,14.0
+llm,Person,Citation,14.0
+llm,Creative Work,Dataset,13.8
+llm,Dataset,Semantic Web vocabulary,13.2
+llm,Creative Work,Project,12.8
+llm,Citation,Person,12.6
+llm,Publication title,Organization,11.6
+llm,Event,Time,11.2
+llm,Dataset,Creative Work,11.0
+gliner,Organization,Place,11.0
+llm,Project,Organization,10.8
+llm,Archival Metadata,Dataset,10.4
+llm,Project,Creative Work,10.2
+llm,Event,Creative Work,10.2
+llm,Organization,Event,9.8
+gliner,Person,Place,9.0
+llm,Place,Person,8.0
+llm,Dataset,Publication title,7.6
+llm,Person,Place,7.4
+llm,Event,Publication title,7.2
+llm,Event,Project,6.4
+llm,Project,Event,6.4
+llm,Semantic Web vocabulary,Project,6.2
+llm,Software,Organization,6.2
+gliner,Publication title,Organization,6.0
+llm,Archival Metadata,Person,5.8
+llm,Person,Publication title,5.8
+llm,Project,Semantic Web vocabulary,5.8
+llm,Publication title,Person,5.6
+llm,Point of Interest,Organization,5.6
+llm,Point of Interest,Project,5.6
+gliner,Project,Organization,5.0
+llm,Citation,Dataset,4.8
+llm,Place,Point of Interest,4.8
+llm,Point of Interest,Archival Metadata,4.8
+llm,Creative Work,Point of Interest,4.6
+llm,Software,Dataset,4.6
+llm,Organization,Point of Interest,4.4
+llm,Citation,Semantic Web vocabulary,4.2
+llm,Project,Dataset,4.2
+llm,Organization,Software,4.0
+llm,Project,Software,4.0
+gliner,Event,Place,4.0
+llm,Publication title,Time,3.8
+llm,Project,Archival Metadata,3.8
+llm,Creative Work,Citation,3.6
+llm,Person,Semantic Web vocabulary,3.6
+llm,Software,Publication title,3.4
+llm,Publication title,Place,3.4
+llm,Dataset,Project,3.4
+llm,Dataset,Organization,3.4
+llm,Semantic Web vocabulary,Publication title,3.2
+llm,Citation,Creative Work,3.2
+gliner,Point of Interest,Organization,3.0
+llm,Dataset,Archival Metadata,3.0
+llm,Project,Place,2.8
+llm,Event,Place,2.8
+llm,Time,Creative Work,2.6
+llm,Semantic Web vocabulary,Event,2.6
+llm,Project,Point of Interest,2.4
+llm,Archival Metadata,Place,2.4
+llm,Place,Archival Metadata,2.4
+llm,Dataset,Place,2.2
+llm,Creative Work,Organization,2.2
+llm,Point of Interest,Publication title,2.2
+llm,Organization,Citation,2.2
+llm,Publication title,Semantic Web vocabulary,2.2
+gliner,Creative Work,Person,2.0
+llm,Organization,Semantic Web vocabulary,2.0
+llm,Publication title,Dataset,1.8
+llm,Organization,Dataset,1.8
+llm,Event,Person,1.6
+llm,Person,Archival Metadata,1.4
+llm,Event,Organization,1.4
+llm,Place,Publication title,1.4
+llm,Archival Metadata,Event,1.4
+llm,Point of Interest,Semantic Web vocabulary,1.4
+llm,Software,Creative Work,1.2
+llm,Place,Project,1.2
+llm,Dataset,Citation,1.2
+llm,Creative Work,Archival Metadata,1.2
+llm,Place,Dataset,1.2
+llm,Citation,Time,1.2
+gliner,Place,Person,1.0
+llm,Semantic Web vocabulary,Organization,1.0
+llm,Point of Interest,Citation,1.0
+llm,Place,Event,1.0
+llm,Organization,Time,1.0
+gliner,Person,Organization,1.0
+gliner,Creative Work,Organization,1.0
+gliner,Place,Organization,1.0
+llm,Point of Interest,Event,1.0
+llm,Software,Semantic Web vocabulary,1.0
+llm,Time,Citation,0.8
+llm,Time,Dataset,0.8
+llm,Point of Interest,Software,0.8
+llm,Software,Archival Metadata,0.6
+llm,Semantic Web vocabulary,Person,0.6
+llm,Dataset,Person,0.6
+llm,Archival Metadata,Time,0.6
+llm,Point of Interest,Dataset,0.6
+llm,Semantic Web vocabulary,Software,0.6
+llm,Dataset,Point of Interest,0.6
+llm,Semantic Web vocabulary,Point of Interest,0.4
+llm,Time,Organization,0.4
+llm,Creative Work,Place,0.4
+llm,Place,Semantic Web vocabulary,0.4
+llm,Event,Citation,0.4
+llm,Person,Project,0.4
+llm,Project,Citation,0.4
+llm,Semantic Web vocabulary,Place,0.4
+llm,Software,Citation,0.4
+llm,Time,Point of Interest,0.2
+llm,Archival Metadata,Point of Interest,0.2
+llm,Archival Metadata,Software,0.2
+llm,Time,Archival Metadata,0.2
+llm,Place,Time,0.2
+llm,Point of Interest,Person,0.2
+llm,Person,Point of Interest,0.2
+llm,Citation,Project,0.2
+llm,Project,Person,0.2
+llm,Dataset,Event,0.2
+llm,Citation,Organization,0.2
+llm,Person,Event,0.2

@@ -1,0 +1,14 @@
+{
+  "coner": {
+    "num_samples": 136907,
+    "seconds": 91927.3
+  },
+  "nerd": {
+    "num_samples": 62418,
+    "seconds": 37439.66
+  },
+  "scier": {
+    "num_samples": 167,
+    "seconds": 143.46
+  }
+}

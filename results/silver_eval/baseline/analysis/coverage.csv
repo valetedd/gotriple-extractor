@@ -1,0 +1,3 @@
+model,gold_chunks_available,pred_chunks_available,aligned_chunks_used,pred_only_chunks,gold_missing_for_model,aligned_ratio_vs_gold
+gliner,72592,72592,72592,0,0,1.0
+llm,72592,72592,72592,0,0,1.0

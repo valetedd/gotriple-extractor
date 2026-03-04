@@ -1,0 +1,7 @@
+{
+  "scenario": "pred_global_085",
+  "description": "Predictions filtered by global confidence threshold 0.85",
+  "apply_gold_label_thresholds": false,
+  "apply_prediction_global_threshold": 0.85,
+  "bootstrap_iters": 200
+}
