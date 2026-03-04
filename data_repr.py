@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, List, Literal, Sequence
+from typing import List, Literal, Sequence
 
 from pydantic import BaseModel, Field
 
@@ -11,7 +11,7 @@ class Entity(BaseModel):
     end: int = Field(description="Character end position")
     label: str = Field(description="Entity type/category")
     text: str = Field(description="The actual entity text")
-    score: float = Field(ge=0.0, le=1.0, description="Confidence score")
+    confidence: float = Field(ge=0.0, le=1.0, description="Confidence score")
 
 
 class Relation(BaseModel):

@@ -68,7 +68,7 @@ class EntityExtractor(Extractor):
 
         return self._model.extract(data, chunk_id)
 
-    def extract_doc(self, data: List[str], doc_id: int = 0, **kwargs) -> Document:
+    def extract_doc(self, data: List[str], doc_id: int = 0, **kwargs) -> Document | List[Document]:
         return self._model.extract_doc(data, doc_id, **kwargs)
 
     def _load_model(
@@ -173,7 +173,7 @@ class SpacyEntityExtractor:
                 "end": ent.end,
                 "text": ent.text,
                 "label": ent.label_,
-                "score": -1,
+                "confidence": -1,
             }
             entities.append(annotation)
 
@@ -192,7 +192,7 @@ class SpacyEntityExtractor:
                     "end": ent.end_char,
                     "text": ent.text,
                     "label": ent.label_,
-                    "score": -1,
+                    "confidence": -1,
                 }
                 for ent in doc.ents
             ]
@@ -232,7 +232,7 @@ class RelationExtractor:
 
     def extract(self, data, chunk_id: int) -> AnnotatedChunk:
         return AnnotatedChunk(
-            chunk_id=chunk_id, span="", annotations=[{}], annotation_t="ent"
+            chunk_id=chunk_id, span="", annotations=[], annotation_t="ent"
         )
 
     def _load_model(self, model_config: Optional[Dict] = None):
@@ -251,7 +251,11 @@ class RelationExtractor:
                 )
 
             case "glirel":
-                return
+                return GlirelExtractor(
+                    glirel_model=self.name,
+                    relation_labels=self.labels,
+                    glirel_config=model_config,
+                )
 
             case _:
                 raise ValueError(f"Unknown model: {self.type}")
@@ -260,25 +264,19 @@ class RelationExtractor:
 class GlirelExtractor:
     def __init__(
         self,
-        gliner_model: str,
+        glirel_model: str,
         relation_labels: List[str] | None,
         glirel_config: Optional[Dict[str, Any]] = None,
     ) -> None:
 
         if not relation_labels:
             raise ValueError(
-                "A set of entity tags has to be specified for GLiNER to work correctly"
+                "A set of entity tags has to be specified for GLiREL to work correctly"
             )
-        from huggingface_hub import snapshot_download
-
-        local_path = snapshot_download(
-            repo_id=gliner_model,
-            local_files_only=True,  # Don't download, just get the cache path
-        )
         self.config = glirel_config
         self.labels = relation_labels
         self.model: GLiREL = GLiREL.from_pretrained(
-            pretrained_model_name_or_path=local_path,
+            glirel_model,
             map_location=DEVICE,
         ).to(DEVICE)
 
@@ -293,7 +291,7 @@ class LLMExtractor:
         config: Optional[Dict[str, Any]],
         task: Literal["ent", "rel", "triple"],
         prompt_variables: Optional[Dict[str, Any]] = None,
-        asynch: bool = True
+        asynch: bool = True,
     ) -> None:
 
         if not task in ["ent", "rel", "triple"]:
@@ -319,7 +317,7 @@ class LLMExtractor:
                 base_url="https://llm.graphia-ssh.eu/v1/",
                 api_key=os.environ.get("API_KEY"),
             )
-        else: 
+        else:
             self.client = OpenAI(
                 base_url="https://llm.graphia-ssh.eu/v1/",
                 api_key=os.environ.get("API_KEY"),
@@ -374,11 +372,11 @@ class LLMExtractor:
     async def extract_async(
         self,
         data: str,
-        attempts: int,
         chunk_id: int = 0,
+        attempts: int = 3,
         semaphore: asyncio.Semaphore | None = None,
-    ) -> AnnotatedChunk:
-        """Async extraction for a single chunk with concurrency control."""
+    ) -> AnnotatedChunk | List[AnnotatedChunk]:
+        """Async extraction for a single chunk with concurrency control (Semaphore)."""
         if semaphore is None:
             raise TypeError(
                 "For async version of extract you need to specify a semaphore object. Use 'extract' instead for a synchronous implementation"
@@ -396,6 +394,22 @@ class LLMExtractor:
                         ],
                         **(self.config or {}),
                     )
+
+                    if len(response.choices) > 1:
+                        result = []
+                        for response in response.choices:
+                            cleaned = self._clean_response(response.message.content)
+                            validated = self._parse_and_validate(cleaned)
+                            result.append(
+                                AnnotatedChunk(
+                                    chunk_id=chunk_id,
+                                    span=data,
+                                    annotations=validated,
+                                    annotation_t=self.task,
+                                )
+                            )
+                        return result
+
                     response_content = self._clean_response(
                         response.choices[0].message.content
                     )
@@ -413,6 +427,18 @@ class LLMExtractor:
                     print("Retrying ...")
 
             print("Max attempts reached, returning with no predictions")
+
+            if isinstance(self.config, dict):
+                n_choices = self.config.get("n", 1)
+                if n_choices > 1:
+                    return [
+                        AnnotatedChunk(
+                            chunk_id=chunk_id,
+                            span=data,
+                            annotations=[],
+                            annotation_t=self.task,
+                        )
+                    ] * n_choices
             return AnnotatedChunk(
                 chunk_id=chunk_id, span=data, annotations=[], annotation_t=self.task
             )
@@ -423,7 +449,7 @@ class LLMExtractor:
         doc_id: int = 0,
         max_concurrent: int = 20,
         attempts: int = 3,
-    ) -> Document:
+    ) -> Document | List[Document]:
         """Extract entities from all chunks in a document using async."""
 
         async def _gather_chunks(tasks: List) -> List[AnnotatedChunk]:
@@ -435,14 +461,25 @@ class LLMExtractor:
 
         # Create tasks for all chunks
         tasks = [
-            self.extract_async(chunk, attempts, chunk_id, semaphore)
+            self.extract_async(chunk, chunk_id, attempts, semaphore)
             for chunk_id, chunk in enumerate(data)
         ]
 
         # Run all tasks concurrently
-        chunks = asyncio.run(_gather_chunks(tasks))
+        extr_result: List[AnnotatedChunk] | List[List[AnnotatedChunk]] = asyncio.run(
+            _gather_chunks(tasks)
+        )
 
-        return Document(doc_id=doc_id, chunks=chunks)
+        if extr_result and isinstance(extr_result[0], List):
+            for i in range(self.config.get("n", 1)):
+                chunks = [res[i] for res in extr_result]
+            doc = [
+                Document(doc_id=doc_id, chunks=choices_ann)
+                for choices_ann in extr_result
+            ]
+            return doc
+
+        return Document(doc_id=doc_id, chunks=extr_result)
 
     @staticmethod
     def _clean_response(resp: str):
@@ -453,7 +490,6 @@ class LLMExtractor:
         if not (resp.startswith("[") and resp.endswith("]")):
 
             resp = resp.strip("```").strip("json")
-
 
         return resp
 
@@ -473,7 +509,9 @@ class LLMExtractor:
 
         # Check for any unresolved placeholders
         unresolved_placeholders = [
-            var for var in prompt_content.split() if var.startswith("{") and var.endswith("}")
+            var
+            for var in prompt_content.split()
+            if var.startswith("{") and var.endswith("}")
         ]
         if unresolved_placeholders:
             raise ValueError(
@@ -481,6 +519,8 @@ class LLMExtractor:
             )
 
         return prompt_content
+
+
 class JointExtractor:
     """
     Class for joint triplet extraction implementations, with fused entity and
@@ -543,21 +583,22 @@ if __name__ == "__main__":
     # Aailable models: DeepSeek-V3.1-vLLM; Qwen3-Coder-30B-A3B-Instruct-Q8_0
     extr = EntityExtractor(
         model_type="base-llm",
-        model_name="Qwen3-Coder-30B-A3B-Instruct-Q8_0",
+        model_name="DeepSeek-V3.1-vLLM",
         entity_tags=entity_types,
         model_config={
             "temperature": 0.2,
-            "extra_body": {
-                "chat_template_kwargs": {"thinking": True},
-                "max_reasoning_tokens": 128,
-            },
+            # "n": 3,
+            # "extra_body": {
+            #     "chat_template_kwargs": {"thinking": True},
+            #     "max_reasoning_tokens": 128,
+            # },
         },
         prompt="./prompt.md",
     )
-    print("============ LLM ============\n")
-    ents = extr.extract(sentence).annotations
+    print("=" * 35, "LLM", "=" * 35)
+    ents = extr.extract(sentence)
     print("\t", ents)
-    ents2 = extr.extract(sentence2).annotations
+    ents2 = extr.extract(sentence2)
     print("\t", ents2)
 
     ents3 = extr.extract_doc([sentence, sentence2])
