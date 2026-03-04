@@ -1,0 +1,39 @@
+model,gold_label,pred_label,count
+gliner,Creative Work,Time,1559
+gliner,Location,Organization,1132
+gliner,Time,Event,838
+gliner,Organization,Location,573
+gliner,Creative Work,Organization,573
+gliner,Organization,Person,409
+gliner,Software,Organization,325
+gliner,Creative Work,Person,176
+gliner,Person,Organization,151
+gliner,Creative Work,Location,134
+gliner,Person,Location,109
+gliner,Event,Location,88
+gliner,Creative Work,Event,87
+gliner,Event,Organization,86
+gliner,Organization,Event,68
+gliner,Location,Person,46
+gliner,Organization,Time,36
+gliner,Time,Location,34
+gliner,Organization,Creative Work,24
+gliner,Software,Creative Work,16
+gliner,Location,Event,13
+gliner,Time,Organization,12
+gliner,Software,Event,11
+gliner,Dataset,Software,11
+gliner,Person,Creative Work,11
+gliner,Event,Person,10
+gliner,Software,Location,7
+gliner,Time,Person,6
+gliner,Creative Work,Software,5
+gliner,Location,Time,4
+gliner,Time,Creative Work,4
+gliner,Organization,Software,3
+gliner,Person,Event,3
+gliner,Software,Person,2
+gliner,Location,Creative Work,2
+gliner,Event,Creative Work,2
+gliner,Person,Time,1
+gliner,Dataset,Organization,1
