@@ -9,6 +9,7 @@ from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import BytesIO
 from pathlib import Path
+from threading import Lock, local
 from typing import Generator, List, Literal, Optional
 
 import polars as pl
@@ -19,11 +20,26 @@ from ftfy import fix_text
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-session = requests.Session()
 retries = Retry(total=2, backoff_factor=0.5, status_forcelist=[500, 502, 503, 504])
-session.mount(
-    "https://", HTTPAdapter(max_retries=retries, pool_maxsize=50, pool_connections=50)
-)
+
+
+def _build_session() -> requests.Session:
+    sess = requests.Session()
+    sess.mount(
+        "https://", HTTPAdapter(max_retries=retries, pool_maxsize=50, pool_connections=50)
+    )
+    return sess
+
+
+_thread_local = local()
+
+
+def _get_session() -> requests.Session:
+    sess = getattr(_thread_local, "session", None)
+    if sess is None:
+        sess = _build_session()
+        _thread_local.session = sess
+    return sess
 
 
 DOMAIN_REDIRECTS = {
@@ -34,8 +50,10 @@ DOMAIN_REDIRECTS = {
 
 # tracking domain that often fail
 domain_fails = defaultdict(int)
+domain_fails_lock = Lock()
 
-CONCURRENT = False
+CONCURRENT = True
+MAX_WORKERS = max(1, int(os.environ.get("GOTRIPLE_MAX_WORKERS", "12")))
 MIN_PAGES = 5  # Allows filtering out short PDFs
 MIN_WORDS = 20 # Filter to exclude PDFs with little words per page
 MIN_SAMPLE_SIZE = 1  # Ensuring a lower bound for discipline-language pairs representation in the final dataset
@@ -72,6 +90,27 @@ VALID_SCRIPTS = {
 SCRIPT_REGEXES = {
     script: regex.compile(rf"\p{{Script={script}}}") for script in VALID_SCRIPTS
 }
+
+
+def _get_domain_fails(domain: str) -> int:
+    with domain_fails_lock:
+        return domain_fails[domain]
+
+
+def _update_domain_fails(domain: str, delta: int) -> int:
+    with domain_fails_lock:
+        domain_fails[domain] += delta
+        return domain_fails[domain]
+
+
+def _normalize_url(url: str) -> tuple[str, str]:
+    split_url = url.split("/")
+    domain = split_url[2] if len(split_url) > 2 else ""
+    if domain in DOMAIN_REDIRECTS:
+        split_url[2] = DOMAIN_REDIRECTS[domain]
+        url = "/".join(split_url)
+        domain = split_url[2]
+    return url, domain
 
 
 def get_ratios(stats_path: str):
@@ -328,7 +367,7 @@ def fetch_pdf(url: str):
     domain = url.split("/")[2]
 
 
-    for attempt in N_ATTEMPTS:
+    for attempt in range( N_ATTEMPTS ):
         try:
             if not attempted:
                 with requests.get(
@@ -351,7 +390,7 @@ def fetch_pdf(url: str):
                     "Referer": "https://www.google.com",
                 }
 
-                with session.get(
+                with _get_session().get(
                     url,
                     headers=headers,
                     timeout=(10, 20),
@@ -372,7 +411,7 @@ def fetch_pdf(url: str):
 
             # free the buffer explicitly after use (optional)
             buf.close()
-            domain_fails[domain] -= 1
+            _update_domain_fails(domain, -1)
             return doc_blocks, True
 
         except (ValueError, TypeError) as e:
@@ -383,8 +422,8 @@ def fetch_pdf(url: str):
             if attempted:
                 print(f"Failed to retrieve PDF via current URL during attempt {1+attempt}. Retrying...")
 
-                domain_fails[domain] += 1
-                print(f"{domain} has failed {domain_fails[domain]} times!")
+                fails = _update_domain_fails(domain, 1)
+                print(f"{domain} has failed {fails} times!")
                 break
             else:
                 attempted = True
@@ -395,44 +434,91 @@ def fetch_pdf(url: str):
     return [""], False
 
 
-def process_until_target(urls: Generator, target: int) -> pl.LazyFrame | None:
+def process_until_target(
+    urls: Generator,
+    target: int,
+    concurrent: bool = CONCURRENT,
+    max_workers: int = MAX_WORKERS,
+) -> pl.LazyFrame | None:
     """
     Calls a fetch function on each PDF url, collecting the results and tracking failures of servers.
     Stops when a certain target of successful fetches is reached.
 
     Parameters:
         urls  (Generator): generator yielding single urls
-        target (int): number of successful fetches having to be achieved. 
+        target (int): number of successful fetches having to be achieved.
+        concurrent (bool): whether to fetch PDFs concurrently.
+        max_workers (int): number of concurrent workers to use when enabled.
 
     Returns:
         pl.LazyFrame: concat of the content fetched through each URL.
     """
     results = []
     success_count = 0
-    try:
-        for url in urls:
-            split_url = url.split("/")
-            if (domain := split_url[2]) in DOMAIN_REDIRECTS:
-                split_url[2] = DOMAIN_REDIRECTS[
-                    split_url[2]
-                ]  # The 3d element of the split is the domain: http://example.foo/
-                url = "/".join(split_url)
+    if target <= 0:
+        return None
 
-            if domain_fails[domain] >= FAILURES_PATIENCE:
-                continue
+    max_workers = max(1, min(max_workers, target))
+
+    if not concurrent or max_workers <= 1:
+        try:
+            for url in urls:
+                url, domain = _normalize_url(url)
+                if _get_domain_fails(domain) >= FAILURES_PATIENCE:
+                    continue
+                try:
+                    text_blocks, success = fetch_pdf(url)
+                    if success:
+                        success_count += 1
+                        print("appending text...")
+                        results.append({"url": url, "text": text_blocks})
+                    if success_count == target:
+                        break
+                except Exception as e:
+                    print(f"Failed {url}: {e}")
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt received, shutting down...")
+            raise
+    else:
+        in_flight = {}
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
             try:
-                text_blocks, success = fetch_pdf(url)
-                if success:
-                    success_count += 1
-                    print("appending text...")
-                    results.append({"url": url, "text": text_blocks})
-                if success_count == target:
-                    break
-            except Exception as e:
-                print(f"Failed {url}: {e}")
-    except KeyboardInterrupt:
-        print("KeyboardInterrupt received, shutting down...")
-        raise
+                while success_count < target:
+                    while urls and len(in_flight) < max_workers:
+                        try:
+                            url = next(urls)
+                        except StopIteration:
+                            break
+
+                        url, domain = _normalize_url(url)
+                        if _get_domain_fails(domain) >= FAILURES_PATIENCE:
+                            continue
+
+                        in_flight[executor.submit(fetch_pdf, url)] = url
+
+                    if not in_flight:
+                        break
+
+                    done_future = next(as_completed(in_flight))
+                    done_url = in_flight.pop(done_future)
+                    try:
+                        text_blocks, success = done_future.result()
+                        if success:
+                            success_count += 1
+                            print("appending text...")
+                            results.append({"url": done_url, "text": text_blocks})
+                            # Breaking loop and cancelling unfinished jobs if target is reached
+                            if success_count == target:
+                                for pending in in_flight:
+                                    pending.cancel()
+                                break
+                    except Exception as e:
+                        print(f"Failed {done_url}: {e}")
+            except KeyboardInterrupt:
+                print("KeyboardInterrupt received, shutting down...")
+                for pending in in_flight:
+                    pending.cancel()
+                raise
 
     if not results:
         return None
@@ -486,7 +572,7 @@ def process_discipline(
     ratios = get_ratios(stats_path=stats_path)
 
     for lang in languages:
-        # TODO:Correct sampling by implementing proportionate reallocation of the remainder
+        # TODO:Correct sampling by implementing proportionate reallocation ofthe remainder
         lang_sample_n = round(ds_size * ratios[lang]["ratio"])
         if len(result) == lang_sample_n:
             break
