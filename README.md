@@ -46,7 +46,7 @@ All components are orchestrated through a small set of Python scripts that can b
 ### Prerequisites
 
 * **Python 3.12+** (tested with 3.12.3)
-* **UV**  for dependency management
+* **uv**  for dependency management
 * **GPU** (optional but recommended for GLiNER/GLiREL and LLM inference)
 * Access to the Graphia LLM endpoint – set `API_KEY` in a ``.env`` file.
 
@@ -58,7 +58,7 @@ git clone https://github.com/your‑org/gotriple_extractor.git
 cd gotriple_extractor
 
 # Install dependencies (uv preferred)
-uv install
+uv sync
 # or, using pip
 pip install -r requirements.txt
 
@@ -73,7 +73,7 @@ cp .env   # Edit .env to add your API_KEY and AVAILABLE_MODELS
 python entity_extraction.py
 ```
 
-You should see JSON output under ``annotated_test-final/`` containing entities extracted by the default LLM extractor.
+You should see JSON output under ``predictions-llm/`` containing entities extracted by the default LLM extractor. ``predicitons-gliner_spacy`` includes enitty extraction data using the more lightweight GLiNER and spaCy models.
 
 ---
 
@@ -86,7 +86,7 @@ Raw GoTriple JSON files live in ``text_dataset/``.  The ``utils.clean_and_rechun
 1. Reads each line‑delimited JSON document.
 2. Re‑assembles the original page text via ``clean_page_text``.
 3. Recursively chunks the text (default 512 tokens, 20 char minimum) and adds a 50‑token overlap.
-4. Writes the processed chunks to ``dataset/extracted_2/`` as ``.ndjson``.
+4. Writes the processed chunks to ``dataset/extracted/`` as ``.ndjson``.
 
 ### 2. Entity Extraction
 
