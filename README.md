@@ -1,93 +1,175 @@
-# EntityExtractionExperiments
+# GoTriple Extractor
 
+**Multilingual NLP pipeline for extracting entities, relations, and linking them to the GoTriple knowledge base.**
 
+---
 
-## Getting started
+## Overview
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+`gotriple_extractor` is a research‑grade toolkit that processes raw multilingual text, extracts named entities and semantic relations, and aligns the results with the **GoTriple** dataset – a large, cross‑disciplinary collection of scholarly texts.  The project showcases:
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+* **Chunk‑level processing** – texts are recursively chunked (≈512 tokens) with overlap refinement to preserve context.
+* **Entity extraction** – multiple back‑ends are supported:
+  * **GLiNER** (large‑scale token classification)
+  * **spaCy** multilingual models
+  * **LLM‑driven extraction** (prompt‑based, configurable temperature & n‑best) via the Graphia LLM endpoint.
+* **Relation extraction** – GLiREL and prompt‑based LLM extraction with schema validation.
+* **Linking** – heuristic matching of extracted entities to GoTriple entries.
+* **Benchmarking** – reproducible evaluation on CONER, NERD, and SciERC datasets with precision/recall visualisations.
 
-## Add your files
+All components are orchestrated through a small set of Python scripts that can be chained together or invoked individually.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+---
+
+## Repository Structure
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.operas-eu.org/graphia/entityextractionexperiments.git
-git branch -M main
-git push -uf origin main
+├── benchmark/                 # Benchmark scripts & results
+│   ├── *.parquet               # Datasets (CONER, NERD, SciERC)
+│   └── benchmark_results/      # Figures & CSV analyses
+├── linking/                   # Entity linking utilities
+├── text_dataset/              # Raw GoTriple‑derived JSON files
+├── utils.py                   # Helper functions (cleaning, rechunking, etc.)
+├── data_repr.py               # Pydantic schemas & dataclasses
+├── extraction.py              # Core extractor abstractions
+├── entity_extraction.py       # High‑level entity extraction driver
+├── relation_extraction.py     # Relation extraction and candidate sampling
+├── prompt.md                  # Prompt used for LLM‑based extraction
+├── pyproject.toml             # Poetry/PEP‑517 build config
+└── README.md                  # ★ This file ★
 ```
 
-## Integrate with your tools
+---
 
-- [ ] [Set up project integrations](https://gitlab.operas-eu.org/graphia/entityextractionexperiments/-/settings/integrations)
+## Getting Started
 
-## Collaborate with your team
+### Prerequisites
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+* **Python 3.12+** (tested with 3.12.3)
+* **UV**  for dependency management
+* **GPU** (optional but recommended for GLiNER/GLiREL and LLM inference)
+* Access to the Graphia LLM endpoint – set `API_KEY` in a ``.env`` file.
 
-## Test and Deploy
+### Installation
 
-Use the built-in continuous integration in GitLab.
+```bash
+# Clone the repository
+git clone https://github.com/your‑org/gotriple_extractor.git
+cd gotriple_extractor
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+# Install dependencies (uv preferred)
+uv install
+# or, using pip
+pip install -r requirements.txt
 
-***
+# Load environment variables
+cp .env   # Edit .env to add your API_KEY and AVAILABLE_MODELS
+```
 
-# Editing this README
+### Quick Test
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+```bash
+# Run a tiny end‑to‑end entity extraction on a single discipline
+python entity_extraction.py
+```
 
-## Suggestions for a good README
+You should see JSON output under ``annotated_test-final/`` containing entities extracted by the default LLM extractor.
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+---
 
-## Name
-Choose a self-explaining name for your project.
+## How It Works
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+### 1. Data Preparation
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+Raw GoTriple JSON files live in ``text_dataset/``.  The ``utils.clean_and_rechunk`` function:
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+1. Reads each line‑delimited JSON document.
+2. Re‑assembles the original page text via ``clean_page_text``.
+3. Recursively chunks the text (default 512 tokens, 20 char minimum) and adds a 50‑token overlap.
+4. Writes the processed chunks to ``dataset/extracted_2/`` as ``.ndjson``.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+### 2. Entity Extraction
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+The ``EntityExtractor`` class abstracts three concrete implementations:
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+| Backend | How it works | Typical use‑case |
+|--------|--------------|-----------------|
+| **gliner** | Loads a HuggingFace checkpoint (cached locally) and performs token‑level classification. | Fast, deterministic extraction when a suitable tag set is available. |
+| **spacy** | Loads a multilingual spaCy pipeline (e.g., ``xx_ent_wiki_sm``) and pipes documents. | Low‑resource environments, quick prototyping. |
+| **base-llm** | Sends the chunk to a remote LLM with a structured prompt (see ``prompt.md``). Supports ``n``‑best sampling. | Highest recall, flexible label set, language‑agnostic extraction. |
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+Extraction returns an ``AnnotatedChunk`` which stores the original span, a list of ``Entity`` objects, and the model type.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+### 3. Relation Extraction
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+Implemented in ``relation_extraction.py``.  It can:
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+* Load GLiREL models or use the same LLM infrastructure with a relation‑specific prompt.
+* Enforce **relation constraints** (allowed head/tail entity types) via the ``validate_relation_constraints`` helper.
+* Sample a balanced set of candidate chunks for manual annotation (useful for active‑learning loops).
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+### 4. Linking
 
-## License
-For open source projects, say how it is licensed.
+The ``linking/add_chunk_id.py`` script demonstrates a lightweight heuristic:
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+* For each extracted entity, it searches the original chunk list for the first occurrence.
+* Stores the matching ``chunk_id`` alongside the linked GoTriple record.
+* Unmatched entities are logged to ``linking/log.json`` for later inspection.
+
+### 5. Benchmarking
+
+The ``benchmark/run_benchmark.py`` script evaluates entity extraction quality on standard datasets:
+
+* Loads a dataset parquet file, maps dataset‑specific entity labels to the GoTriple schema, filters empty examples, and processes them in 512‑sample chunks.
+* Uses the GLiNER extractor (configurable threshold) to generate predictions.
+* Writes per‑sample JSON lines to ``results/benchmark_results/combined_results.jsonl`` and aggregates timing information.
+* Visualisations (precision‑recall curves, macro‑vs‑micro F1, label support) are pre‑generated under ``benchmark/benchmark_results/figures/``.
+
+---
+
+## Running the Full Pipeline
+
+```bash
+
+# 2️⃣ Entity extraction (example with LLM backend)
+python entity_extraction.py
+
+# 3️⃣ (Optional) Relation extraction – see the CLI in relation_extraction.py
+python relation_extraction.py --predictions ./annotated_test-final --source ./text_dataset/extracted_2 --languages en it fr de --samples 500
+
+# 4️⃣ Linking to GoTriple entries
+python linking/add_chunk_id.py
+
+# 5️⃣ Benchmark against external corpora
+python benchmark/run_benchmark.py
+```
+
+Each step writes its artefacts to clearly named directories; you can rerun any step independently by adjusting the input paths.
+
+---
+
+## Configuration
+
+* **Model selection** – pass ``model_type``/``model_name`` to the ``EntityExtractor`` or ``RelationExtractor`` constructors.
+* **Prompt customization** – edit ``prompt.md``; the placeholder ``{ENTITY_TAGS}`` is automatically substituted with the tag list you provide.
+* **Environment variables** – ``API_KEY`` (Graphia LLM), ``AVAILABLE_MODELS`` (comma‑separated list of permitted remote models) are read from ``.env``.
+* **Chunking parameters** – tweak ``chunk_size`` and ``context_size`` in ``utils.clean_and_rechunk``.
+
+---
+
+## Extending the Toolkit
+
+* **Add a new entity backend** – implement a class with ``extract`` and ``extract_doc`` methods and register it in ``EntityExtractor._load_model``.
+* **Custom relation schema** – modify ``DEFAULT_RELATION_CONSTRAINTS`` in ``relation_extraction.py`` and re‑run the sampling utilities.
+* **Fine‑tune GLiNER/GLiREL** – replace the HuggingFace repo ID with your fine‑tuned checkpoint; the cache will be reused.
+
+---
+
+## License & Citation
+
+This project is released under the **MIT License**.  If you use the toolkit in academic work, please cite the original GoTriple paper and this repository:
+
+
+## Acknowledgements
+
+We thank the developers of **GLiNER**, **GLiREL**, **spaCy**, and the Graphia team for providing the LLM endpoint.  Special thanks to the contributors of the CONER, NERD, and SciERC benchmark datasets.
