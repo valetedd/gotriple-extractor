@@ -131,16 +131,16 @@ The ``benchmark/run_benchmark.py`` script evaluates entity extraction quality on
 
 ```bash
 
-# 2️⃣ Entity extraction (example with LLM backend)
+# 1️⃣ Entity extraction (example with LLM backend)
 python entity_extraction.py
 
-# 3️⃣ (Optional) Relation extraction – see the CLI in relation_extraction.py
+# 2️⃣ (Optional) Relation extraction – see the CLI in relation_extraction.py
 python relation_extraction.py --predictions ./annotated_test-final --source ./text_dataset/extracted_2 --languages en it fr de --samples 500
 
-# 4️⃣ Linking to GoTriple entries
+# 3️⃣ Linking to GoTriple entries
 python linking/add_chunk_id.py
 
-# 5️⃣ Benchmark against external corpora
+# 4️⃣ Benchmark against external corpora
 python benchmark/run_benchmark.py
 ```
 
