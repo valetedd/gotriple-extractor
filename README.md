@@ -88,6 +88,8 @@ Raw GoTriple JSON files live in ``text_dataset/``.  The ``utils.clean_and_rechun
 3. Recursively chunks the text (default 512 tokens, 20 char minimum) and adds a 50‑token overlap.
 4. Writes the processed chunks to ``dataset/extracted/`` as ``.ndjson``.
 
+If you want to replicate the text dataset creation, you can download the [GoTriple metadata dump](https://zenodo.org/records/15784401) and place the JSON files in the ``gotriple_dump`` directory.
+
 ### 2. Entity Extraction
 
 The ``EntityExtractor`` class abstracts three concrete implementations:
